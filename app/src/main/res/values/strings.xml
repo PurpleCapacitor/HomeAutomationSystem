@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Home Automation System</string>
+    <string name="signIn">Sign In</string>
+    <string name="register">Register</string>
+    <string name="enterEmail">Enter email</string>
+    <string name="enterPass">Enter password</string>
+    <string name="welcomeLogin">Welcome, please login</string>
+    <string name="enterFirstName">First name</string>
+    <string name="enterLastName">Last name</string>
 </resources>
