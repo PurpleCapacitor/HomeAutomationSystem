@@ -7,4 +7,7 @@
     <string name="welcomeLogin">Welcome, please login</string>
     <string name="enterFirstName">First name</string>
     <string name="enterLastName">Last name</string>
+    <string name="see_more">See more</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
 </resources>
