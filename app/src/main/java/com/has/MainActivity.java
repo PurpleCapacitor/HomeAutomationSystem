@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     //TODO treba search ikonica gore desno i tu da se pojavi dijalog sta da pretrazujes
 
     private void populateList() {
-        deviceList = new ArrayList<>();
         Device d1 = new Device();
         d1.setName("Device 1");
         d1.setDescription("This is a description");

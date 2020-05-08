@@ -10,4 +10,6 @@
     <string name="see_more">See more</string>
     <string name="share">Share</string>
     <string name="delete">Delete</string>
+    <string name="sensors">Sensors</string>
+    <string name="actuators">Actuators</string>
 </resources>
