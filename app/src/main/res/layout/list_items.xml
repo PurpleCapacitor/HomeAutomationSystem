@@ -11,10 +11,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <!--android:paddingHorizontal=""-->
 
         <TextView
-            android:id="@+id/text_device_name_list"
+            android:id="@+id/text_name_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -24,13 +23,13 @@
             android:textAppearance="?android:textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/tex_device_description_list"
+            android:id="@+id/text_description_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:layout_below="@+id/text_device_name_list"
-            android:text="Device description"/>
+            android:layout_below="@+id/text_name_list"
+            android:text="Description"/>
 
         <ImageButton
             android:id="@+id/button_popup_menu"

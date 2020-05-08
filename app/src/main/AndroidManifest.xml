@@ -17,7 +17,6 @@
         <activity android:name=".user.LoginActivity" />
         <activity android:name=".user.RegisterActivity" />
         <activity android:name=".DeviceInfoActivity" />
-        <activity android:name=".model.Sensor"/>
-        <activity android:name=".model.Actuator"/>
+        <activity android:name=".RulesActivity"/>
     </application>
 </manifest>

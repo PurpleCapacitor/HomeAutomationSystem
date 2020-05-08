@@ -1,7 +1,6 @@
 package com.has.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,62 +13,45 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.has.DeviceInfoActivity;
 import com.has.R;
-import com.has.model.Device;
+import com.has.model.Rule;
 
 import java.util.List;
 
-public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
+public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder> {
 
-    private List<Device> deviceList;
+    private List<Rule> ruleList;
     private Context context;
 
-    public DeviceAdapter(List<Device> deviceList, Context context) {
-        this.deviceList = deviceList;
+    public RuleAdapter(List<Rule> ruleList, Context context) {
+        this.ruleList = ruleList;
         this.context = context;
     }
 
-    //connecting views for each data items
-    public static class DeviceViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView heading;
-        private TextView description;
-        private ImageButton popupMenu;
-
-        public DeviceViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            heading = itemView.findViewById(R.id.text_name_list);
-            description = itemView.findViewById(R.id.text_description_list);
-            popupMenu = itemView.findViewById(R.id.button_popup_menu);
-        }
-    }
-
-
     @NonNull
     @Override
-    public DeviceAdapter.DeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RuleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_items, parent, false);
-        return new DeviceAdapter.DeviceViewHolder(v);
+        return new RuleAdapter.RuleViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final DeviceAdapter.DeviceViewHolder holder, int position) {
-        final Device device = deviceList.get(position);
-        holder.heading.setText(device.getName());
-        holder.description.setText(device.getDescription());
+    public void onBindViewHolder(@NonNull final RuleViewHolder holder, int position) {
+        final Rule rule = ruleList.get(position);
+        holder.heading.setText(rule.getName());
+        holder.description.setText(rule.getDescription());
         holder.popupMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.inflate(R.menu.popup_options_menu);
+                popupMenu.inflate(R.menu.popup_options_menu); //TODO ne treba da bude share ukljucen,
+                // pravi drugi popup ili vidi dal moze nesto da se iskljuci
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                                detailedView();
+                                Toast.makeText(context, "See more", Toast.LENGTH_LONG).show();
                                 break;
                             case R.id.share:
                                 Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
@@ -89,13 +71,20 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
 
     @Override
     public int getItemCount() {
-        return deviceList.size();
+        return ruleList.size();
     }
 
-    private void detailedView() {
-        Intent intent = new Intent(context, DeviceInfoActivity.class);
-        context.startActivity(intent);
+    public static class RuleViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView heading;
+        public TextView description;
+        public ImageButton popupMenu;
+
+        public RuleViewHolder(@NonNull View itemView) {
+            super(itemView);
+            heading = itemView.findViewById(R.id.text_name_list);
+            description = itemView.findViewById(R.id.text_description_list);
+            popupMenu = itemView.findViewById(R.id.button_popup_menu);
+        }
     }
-
-
 }

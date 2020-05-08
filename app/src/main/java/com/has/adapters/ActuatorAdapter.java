@@ -31,7 +31,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
     @NonNull
     @Override
     public ActuatorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.devices_list_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_items, parent, false);
         return new ActuatorAdapter.ActuatorViewHolder(v);
     }
 
@@ -83,8 +83,8 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
 
         public ActuatorViewHolder(@NonNull View itemView) {
             super(itemView);
-            heading = itemView.findViewById(R.id.text_device_name_list);
-            description = itemView.findViewById(R.id.tex_device_description_list);
+            heading = itemView.findViewById(R.id.text_name_list);
+            description = itemView.findViewById(R.id.text_description_list);
             popupMenu = itemView.findViewById(R.id.button_popup_menu);
         }
     }

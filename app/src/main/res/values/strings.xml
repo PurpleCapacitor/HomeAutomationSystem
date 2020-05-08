@@ -12,4 +12,5 @@
     <string name="delete">Delete</string>
     <string name="sensors">Sensors</string>
     <string name="actuators">Actuators</string>
+    <string name="activeRules">Active rules</string>
 </resources>

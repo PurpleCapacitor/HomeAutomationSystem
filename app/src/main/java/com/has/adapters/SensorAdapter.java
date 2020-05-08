@@ -37,8 +37,8 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
         public SensorViewHolder(@NonNull View itemView) {
             super(itemView);
-            heading = itemView.findViewById(R.id.text_device_name_list);
-            description = itemView.findViewById(R.id.tex_device_description_list);
+            heading = itemView.findViewById(R.id.text_name_list);
+            description = itemView.findViewById(R.id.text_description_list);
             popupMenu = itemView.findViewById(R.id.button_popup_menu);
         }
     }
@@ -46,7 +46,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
     @NonNull
     @Override
     public SensorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.devices_list_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_items, parent, false);
         return new SensorAdapter.SensorViewHolder(v);
     }
 
