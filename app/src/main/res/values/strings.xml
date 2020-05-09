@@ -13,4 +13,21 @@
     <string name="sensors">Sensors</string>
     <string name="actuators">Actuators</string>
     <string name="activeRules">Active rules</string>
+    <string name="title_activity_user_profile">Profile</string>
+
+    <!-- Preference Titles -->
+    <string name="user_profile_header">User profile</string>
+    <string name="devices_header">Devices</string>
+
+    <!-- Messages Preferences -->
+    <string name="email_title">Email</string>
+    <string name="first_name_title">First name</string>
+    <string name="last_name_title">Last name</string>
+    <string name="password_title">Password</string>
+    <string name="password_summary">Change password</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_summary">Includes synchronisation</string>
+    <string name="shared_device_title">Shared devices</string>
+    <string name="shared_device_summary">Information about shared devices</string>
+
 </resources>

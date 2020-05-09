@@ -17,6 +17,8 @@
         <activity android:name=".user.LoginActivity" />
         <activity android:name=".user.RegisterActivity" />
         <activity android:name=".DeviceInfoActivity" />
-        <activity android:name=".RulesActivity"/>
+        <activity android:name=".RulesActivity" />
+        <activity android:name=".settings.UserProfileActivity"
+                  android:label="@string/title_activity_user_profile"/>
     </application>
 </manifest>

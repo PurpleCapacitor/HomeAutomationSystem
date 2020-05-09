@@ -1,0 +1,48 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/user_profile_header"
+                        app:iconSpaceReserved="false">
+
+        <EditTextPreference
+            app:key="email"
+            app:title="@string/email_title"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <EditTextPreference
+            app:key="firstName"
+            app:title="@string/first_name_title"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <EditTextPreference
+            app:key="lastName"
+            app:title="@string/last_name_title"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            app:key="password"
+            app:title="@string/password_title"
+            app:summary="Change password"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            app:key="logout"
+            app:title="@string/logout_title"
+            app:summary="@string/logout_summary"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/devices_header"
+                        app:iconSpaceReserved="false">
+        <Preference
+            app:key="sharedDevices"
+            app:title="@string/shared_device_title"
+            app:summary="@string/shared_device_summary"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
