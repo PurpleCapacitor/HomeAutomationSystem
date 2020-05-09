@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.has.adapters.DeviceAdapter;
 import com.has.adapters.RuleAdapter;
 import com.has.model.Rule;
 
@@ -29,7 +28,7 @@ public class RulesActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView ruleRecyclerView = findViewById(R.id.recycleview_rules_rules_activity);
+        RecyclerView ruleRecyclerView = findViewById(R.id.recycler_view_rules_activity_rules);
         populateList();
         RecyclerView.Adapter ruleAdapter = new RuleAdapter(ruleList, this);
         ruleRecyclerView.setAdapter(ruleAdapter);

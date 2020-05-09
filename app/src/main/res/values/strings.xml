@@ -30,4 +30,9 @@
     <string name="shared_device_title">Shared devices</string>
     <string name="shared_device_summary">Information about shared devices</string>
 
+    <string name="actions">Actions</string>
+    <string name="edit">Edit</string>
+    <string name="header">Header</string>
+    <string name="description">Description</string>
+
 </resources>

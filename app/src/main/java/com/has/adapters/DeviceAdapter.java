@@ -3,6 +3,7 @@ package com.has.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +64,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.inflate(R.menu.popup_options_menu);
+                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
+                popupMenu.getMenu().add(Menu.NONE, R.id.share, 2, "Share");
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

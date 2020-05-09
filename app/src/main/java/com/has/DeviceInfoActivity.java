@@ -1,6 +1,5 @@
 package com.has;
 
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -19,7 +18,7 @@ import com.has.model.Sensor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceInfoActivity  extends AppCompatActivity {
+public class DeviceInfoActivity extends AppCompatActivity {
 
     private List<Sensor> sensorList = new ArrayList<>();
     private List<Actuator> actuatorList = new ArrayList<>();
@@ -32,14 +31,14 @@ public class DeviceInfoActivity  extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView sensorRecyclerView = findViewById(R.id.recycleview_devices_info_activity_sensors);
+        RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
         populateSenors();
         RecyclerView.Adapter sensorAdapter = new SensorAdapter(sensorList, this);
         sensorRecyclerView.setAdapter(sensorAdapter);
         RecyclerView.LayoutManager sensorLayoutManager = new LinearLayoutManager(this);
         sensorRecyclerView.setLayoutManager(sensorLayoutManager);
 
-        RecyclerView actuatorRecyclerView = findViewById(R.id.recycleview_devices_info_activity_actuators);
+        RecyclerView actuatorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_actuators);
         populateActuators();
         RecyclerView.Adapter actuatorAdapter = new ActuatorAdapter(actuatorList, this);
         actuatorRecyclerView.setAdapter(actuatorAdapter);

@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView deviceRecyclerView = findViewById(R.id.recycleview_devices_main_activity);
+        RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         populateList();
         RecyclerView.Adapter deviceAdapter = new DeviceAdapter(deviceList, this);
         deviceRecyclerView.setAdapter(deviceAdapter);

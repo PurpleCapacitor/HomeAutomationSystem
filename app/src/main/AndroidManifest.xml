@@ -20,5 +20,7 @@
         <activity android:name=".RulesActivity" />
         <activity android:name=".settings.UserProfileActivity"
                   android:label="@string/title_activity_user_profile"/>
+        <activity android:name=".ActuatorActivity"/>
+        <activity android:name=".SensorActivity" />
     </application>
 </manifest>

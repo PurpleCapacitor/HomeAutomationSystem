@@ -1,7 +1,9 @@
 package com.has.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.has.ActuatorActivity;
 import com.has.R;
 import com.has.model.Actuator;
 
@@ -44,17 +47,18 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.inflate(R.menu.popup_options_menu); //TODO ne treba da bude share ukljucen,
-                // pravi drugi popup ili vidi dal moze nesto da se iskljuci
+                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, "Edit");
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                                Toast.makeText(context, "See more", Toast.LENGTH_LONG).show();
+                                additionalInfo();
                                 break;
-                            case R.id.share:
-                                Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
+                            case R.id.edit:
+                                Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
                                 break;
                             case R.id.delete:
                                 Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
@@ -68,6 +72,11 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             }
         });
 
+    }
+
+    private void additionalInfo() {
+        Intent intent = new Intent(context, ActuatorActivity.class);
+        context.startActivity(intent);
     }
 
     @Override
@@ -88,4 +97,6 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             popupMenu = itemView.findViewById(R.id.button_popup_menu);
         }
     }
+
+
 }

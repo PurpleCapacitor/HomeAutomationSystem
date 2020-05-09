@@ -18,7 +18,7 @@
         android:layout_marginTop="57dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="Device 1"
+        android:text="@string/header"
         android:textColor="@color/black"
         android:textAppearance="?android:textAppearanceMedium" />
 
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/text_device_name_info"
-        android:text="Description"
+        android:text="@string/description"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"/>
 
@@ -45,7 +45,7 @@
         android:textAppearance="?android:textAppearanceListItem"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleview_devices_info_activity_sensors"
+        android:id="@+id/recycler_view_devices_info_activity_sensors"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="-1dp"
@@ -55,7 +55,7 @@
         android:id="@+id/text_device_info_subtitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/recycleview_devices_info_activity_sensors"
+        android:layout_below="@id/recycler_view_devices_info_activity_sensors"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_marginStart="4dp"
@@ -65,7 +65,7 @@
         android:textAppearance="?android:textAppearanceListItem"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleview_devices_info_activity_actuators"
+        android:id="@+id/recycler_view_devices_info_activity_actuators"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="-1dp"

@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
 
     <TextView
-        android:id="@+id/text_rules_title"
+        android:id="@+id/text_component_name_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -17,20 +18,41 @@
         android:layout_marginTop="57dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="@string/activeRules"
+        android:text="@string/header"
+        android:textColor="@color/black"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/text_component_description_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_component_name_info"
+        android:text="@string/description"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"/>
+
+    <TextView
+        android:id="@+id/text_component_info_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_component_description_info"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:text="@string/actions"
         android:textColor="@color/customRed"
         android:textAppearance="?android:textAppearanceListItem"/>
 
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_rules_activity_rules"
-        android:layout_below="@id/text_rules_title"
+        android:id="@+id/recycler_view_actuator_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="-1dp" />
+        android:layout_marginStart="-1dp"
+        android:layout_below="@id/text_component_info_subtitle" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_button_add_device"
+        android:id="@+id/floating_button_add"
         android:layout_width="269dp"
         android:layout_height="267dp"
         android:layout_alignParentEnd="true"
