@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.has.settings.SettingsActivity;
 import com.has.settings.UserProfileActivity;
 
 public class BaseDrawerActivity extends AppCompatActivity
@@ -48,7 +49,7 @@ public class BaseDrawerActivity extends AppCompatActivity
         } else if (id == R.id.nav_activity3) {
         startAnimatedActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
         } else {
-            //TODO settings
+            startAnimatedActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         }
 
         drawer = findViewById(R.id.drawer_layout);
