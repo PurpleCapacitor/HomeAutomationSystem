@@ -22,6 +22,8 @@
                   android:label="@string/title_activity_user_profile"/>
         <activity android:name=".ActuatorActivity"/>
         <activity android:name=".SensorActivity" />
+        <activity android:name=".settings.SettingsActivity"
+                  android:label="@string/title_activity_settings"/>
         <activity android:name=".BaseDrawerActivity" />
     </application>
 </manifest>
