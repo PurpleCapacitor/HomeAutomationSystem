@@ -34,5 +34,12 @@
     <string name="edit">Edit</string>
     <string name="header">Header</string>
     <string name="description">Description</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="automation_rules">Automation rules</string>
+    <string name="user_profile">User profile</string>
+    <string name="ham">Home Automation Application</string>
+    <string name="devices">Devices</string>
+    <string name="settings">Settings</string>
 
 </resources>
