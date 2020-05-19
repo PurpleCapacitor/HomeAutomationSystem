@@ -37,6 +37,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:src="@drawable/ic_overflow_dark"
+            android:backgroundTint="@color/white"
              />
     </RelativeLayout>
 

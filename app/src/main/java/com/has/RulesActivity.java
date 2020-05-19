@@ -40,7 +40,7 @@ public class RulesActivity extends BaseDrawerActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ruleRecyclerView.setLayoutManager(layoutManager);
 
-        FloatingActionButton addButton = findViewById(R.id.floating_button_add_device);
+        FloatingActionButton addButton = findViewById(R.id.floating_button_add);
         addButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

@@ -40,7 +40,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:text="@string/actions"
-        android:textColor="@color/customRed"
+        android:textColor="@color/colorPrimary"
         android:textAppearance="?android:textAppearanceListItem"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -58,9 +58,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="23dp"
         android:layout_marginBottom="26dp"
-        android:backgroundTint="@color/customRed"
+        android:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_add_24dp"
         android:clickable="true"
-        app:srcCompat="@android:drawable/ic_input_add"
         android:focusable="true" />
 
 </RelativeLayout>

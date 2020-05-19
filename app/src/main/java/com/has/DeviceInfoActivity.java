@@ -45,7 +45,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         RecyclerView.LayoutManager actuatorLayoutManager = new LinearLayoutManager(this);
         actuatorRecyclerView.setLayoutManager(actuatorLayoutManager);
 
-        FloatingActionButton addButton = findViewById(R.id.floating_button_add_device);
+        FloatingActionButton addButton = findViewById(R.id.floating_button_add);
         addButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

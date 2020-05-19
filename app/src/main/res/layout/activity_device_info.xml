@@ -40,7 +40,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:text="@string/sensors"
-        android:textColor="@color/customRed"
+        android:textColor="@color/colorPrimary"
         android:textAppearance="?android:textAppearanceListItem"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -60,7 +60,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:text="@string/actuators"
-        android:textColor="@color/customRed"
+        android:textColor="@color/colorPrimary"
         android:textAppearance="?android:textAppearanceListItem"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -71,16 +71,16 @@
         android:layout_below="@id/text_device_info_subtitle2" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_button_add_device"
+        android:id="@+id/floating_button_add"
         android:layout_width="269dp"
         android:layout_height="267dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="23dp"
         android:layout_marginBottom="26dp"
-        android:backgroundTint="@color/customRed"
+        android:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_add_24dp"
         android:clickable="true"
-        app:srcCompat="@android:drawable/ic_input_add"
         android:focusable="true" />
 
 
