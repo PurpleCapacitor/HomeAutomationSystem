@@ -12,14 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.DeviceAdapter;
+import com.has.data.GetData;
+import com.has.data.RetrofitClient;
 import com.has.model.Device;
+import com.has.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends BaseDrawerActivity {
 
     private List<Device> deviceList = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +55,21 @@ public class MainActivity extends BaseDrawerActivity {
             }
         });
 
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        //Call<User> call = apiService.getAllUsers();
+        //ili
+        apiService.getUser().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                Toast.makeText(MainActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void populateList() {
