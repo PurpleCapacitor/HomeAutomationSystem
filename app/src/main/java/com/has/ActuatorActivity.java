@@ -1,6 +1,7 @@
 package com.has;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,7 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActionAdapter;
+import com.has.adapters.ActuatorAdapter;
+import com.has.data.DatabaseManager;
 import com.has.model.Action;
+import com.has.model.Actuator;
+import com.has.model.Device;
 
 import java.util.ArrayList;
 import java.util.List;

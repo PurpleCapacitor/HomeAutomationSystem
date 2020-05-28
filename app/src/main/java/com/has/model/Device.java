@@ -1,8 +1,26 @@
 package com.has.model;
 
 public class Device {
+    private Long id;
     private String name;
     private String description;
+
+    public Device(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Device() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

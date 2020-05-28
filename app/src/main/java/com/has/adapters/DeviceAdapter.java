@@ -72,7 +72,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                                detailedView();
+                                detailedView(device.getId());
                                 break;
                             case R.id.share:
                                 Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
@@ -95,8 +95,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         return deviceList.size();
     }
 
-    private void detailedView() {
+    private void detailedView(Long id) {
         Intent intent = new Intent(context, DeviceInfoActivity.class);
+        intent.putExtra("deviceId", id);
         context.startActivity(intent);
     }
 

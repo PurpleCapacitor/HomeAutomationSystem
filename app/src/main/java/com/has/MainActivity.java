@@ -3,6 +3,7 @@ package com.has;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.DeviceAdapter;
+import com.has.data.DatabaseManager;
 import com.has.data.GetData;
 import com.has.data.RetrofitClient;
 import com.has.model.Device;
@@ -28,6 +30,7 @@ public class MainActivity extends BaseDrawerActivity {
 
     private List<Device> deviceList = new ArrayList<>();
     private List<User> users = new ArrayList<>();
+    private DatabaseManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,11 @@ public class MainActivity extends BaseDrawerActivity {
 
         drawer.addView(contentView, 0);
         navigationView.setCheckedItem(R.id.nav_activity1);
+        this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
+        dbManager = new DatabaseManager(getApplicationContext());
+
+        dbManager.addDevice("Klima", "Description 1");
+        dbManager.addDevice("Roletna", "Description 2");
 
         RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         populateList();
@@ -73,14 +81,6 @@ public class MainActivity extends BaseDrawerActivity {
     }
 
     private void populateList() {
-        Device d1 = new Device();
-        d1.setName("Device 1");
-        d1.setDescription("This is a description");
-        Device d2 = new Device();
-        d2.setName("Device 2");
-        d2.setDescription("This is a description");
-        deviceList.add(d1);
-        deviceList.add(d2);
-
+        deviceList = dbManager.getAllDevices();
     }
 }

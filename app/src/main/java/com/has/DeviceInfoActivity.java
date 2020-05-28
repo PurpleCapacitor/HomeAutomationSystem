@@ -1,6 +1,8 @@
 package com.has;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
+import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
+import com.has.model.Device;
 import com.has.model.Sensor;
 
 import java.util.ArrayList;
@@ -22,6 +26,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private List<Sensor> sensorList = new ArrayList<>();
     private List<Actuator> actuatorList = new ArrayList<>();
+    private DatabaseManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +36,30 @@ public class DeviceInfoActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        dbManager = new DatabaseManager(getApplicationContext());
+        List<Device> devices = dbManager.getAllDevices();
+        dbManager.addActuator("Act", "bla", devices.get(0).getId(), "5");
+        dbManager.addActuator("Hex", "hjdaskjdsa", devices.get(0).getId(), "6");
+        dbManager.addSensor("Temp", "temperature", devices.get(0).getId(), "5");
+        dbManager.addSensor("Humidity", "humidity", devices.get(0).getId(), "60%");
+
+        Intent intent = getIntent();
+        Long id = intent.getLongExtra("deviceId", -1L);
+        populateActuators(id);
+
+        //test
+        /*int i = dbManager.updateActuator(1L, "Bex", "NOM", devices.get(0).getId(), "6");
+        Log.d("Update int value", "is " + i);
+        dbManager.deleteActuator(2L);*/
+
         RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
-        populateSenors();
+        populateSenors(id);
         RecyclerView.Adapter sensorAdapter = new SensorAdapter(sensorList, this);
         sensorRecyclerView.setAdapter(sensorAdapter);
         RecyclerView.LayoutManager sensorLayoutManager = new LinearLayoutManager(this);
         sensorRecyclerView.setLayoutManager(sensorLayoutManager);
 
         RecyclerView actuatorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_actuators);
-        populateActuators();
         RecyclerView.Adapter actuatorAdapter = new ActuatorAdapter(actuatorList, this);
         actuatorRecyclerView.setAdapter(actuatorAdapter);
         RecyclerView.LayoutManager actuatorLayoutManager = new LinearLayoutManager(this);
@@ -55,18 +75,12 @@ public class DeviceInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void populateActuators() {
-        Actuator a1 = new Actuator("Actuator 1", "Description 1");
-        Actuator a2 = new Actuator("Actuator 2", "Description 2");
-        actuatorList.add(a1);
-        actuatorList.add(a2);
+    private void populateActuators(Long id) {
+       actuatorList = dbManager.getActuatorsByDeviceId(id);
     }
 
-    private void populateSenors() {
-        Sensor s1 = new Sensor("Sensor 1", "Description 1");
-        Sensor s2 = new Sensor("Sensor 2", "Description 2");
-        sensorList.add(s1);
-        sensorList.add(s2);
+    private void populateSenors(Long id) {
+        sensorList = dbManager.getSensorsByDeviceId(id);
     }
 
 }
