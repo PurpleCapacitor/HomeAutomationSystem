@@ -1,5 +1,7 @@
 package com.has.model;
 
+import java.util.Calendar;
+
 public class Sensor {
 
     private Long id;
@@ -7,7 +9,7 @@ public class Sensor {
     private String description;
     private Device device;
     private String value;
-    //TODO mozda timestamp
+    private Long timestamp;
 
     public Sensor() {
     }
@@ -23,6 +25,22 @@ public class Sensor {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Device getDevice() {
@@ -41,19 +59,11 @@ public class Sensor {
         this.value = value;
     }
 
-    public String getReference() {
-        return reference;
+    public Long getTimestamp() {
+        return timestamp;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }

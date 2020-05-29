@@ -40,8 +40,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
         List<Device> devices = dbManager.getAllDevices();
         dbManager.addActuator("Act", "bla", devices.get(0).getId(), "5");
         dbManager.addActuator("Hex", "hjdaskjdsa", devices.get(0).getId(), "6");
-        dbManager.addSensor("Temp", "temperature", devices.get(0).getId(), "5");
-        dbManager.addSensor("Humidity", "humidity", devices.get(0).getId(), "60%");
+        dbManager.addSensor("Temp", "temperature", devices.get(0).getId(), "5", System.currentTimeMillis());
+        dbManager.addSensor("Humidity", "humidity", devices.get(0).getId(), "60%", System.currentTimeMillis());
 
         Intent intent = getIntent();
         Long id = intent.getLongExtra("deviceId", -1L);

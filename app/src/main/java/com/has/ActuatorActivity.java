@@ -53,6 +53,7 @@ public class ActuatorActivity extends AppCompatActivity {
     }
 
     private void populate() {
+
         Action a1 = new Action("Action 1", "Description 1");
         Action a2 = new Action("Action 2", "Description 2");
         actionList.add(a1);

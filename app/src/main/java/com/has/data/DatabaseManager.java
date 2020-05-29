@@ -9,10 +9,10 @@ import android.util.Log;
 import com.has.model.Action;
 import com.has.model.Actuator;
 import com.has.model.Device;
+import com.has.model.Rule;
 import com.has.model.Sensor;
-import com.has.model.SensorData;
+import com.has.model.User;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +25,17 @@ public class DatabaseManager {
     }
 
     // devices
-    public long addDevice(String name, String description) {
+
+    public long addDevice(String name, String description, User loggedUser) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_NAME, name);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        return db.insert(DatabaseHelper.TABLE_DEVICES, null, values);
+        long rowId = db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
+        Device d = getDeviceByName(name);
+        connectDevicesAndUsers(d.getId(), loggedUser.getId());
+        return rowId;
+
     }
 
     public List<Device> getAllDevices() {
@@ -68,6 +73,25 @@ public class DatabaseManager {
         device.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
         device.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         device.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        c.close();
+        return device;
+    }
+
+    public Device getDeviceByName(String name) {
+        Device device = new Device();
+        String selectQuery = "select * from " + DatabaseHelper.TABLE_DEVICES + " where " + DatabaseHelper.CN_NAME + " = '" + name + "'";
+        Log.d("DATABASE QUERY", selectQuery);
+        db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if(c == null) {
+            return null;
+        } else
+            c.moveToFirst();
+
+        device.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
+        device.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
+        device.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        c.close();
         return device;
     }
 
@@ -187,13 +211,14 @@ public class DatabaseManager {
 
     // sensors
 
-    public long addSensor(String reference, String description, Long deviceId, String value) {
+    public long addSensor(String reference, String description, Long deviceId, String value, Long timestamp) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_REFERENCE, reference);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
         values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
         values.put(DatabaseHelper.CN_VALUE, value);
+        values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
         return db.insert(DatabaseHelper.TABLE_SENSORS, null, values);
     }
 
@@ -212,6 +237,7 @@ public class DatabaseManager {
         sensor.setReference(c.getString(c.getColumnIndex(DatabaseHelper.CN_REFERENCE)));
         sensor.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
         sensor.setValue(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE)));
+        sensor.setTimestamp(c.getLong(c.getColumnIndex((DatabaseHelper.CN_TIMESTAMP))));
         Device d = getDevice(c.getLong(c.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
         sensor.setDevice(d);
         c.close();
@@ -233,6 +259,7 @@ public class DatabaseManager {
                 sensor.setReference(c.getString(c.getColumnIndex(DatabaseHelper.CN_REFERENCE)));
                 sensor.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
                 sensor.setValue(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE)));
+                sensor.setTimestamp(c.getLong(c.getColumnIndex((DatabaseHelper.CN_TIMESTAMP))));
                 Device d = getDevice(c.getLong(c.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
                 sensor.setDevice(d);
                 sensors.add(sensor);
@@ -258,6 +285,7 @@ public class DatabaseManager {
                 sensor.setReference(c.getString(c.getColumnIndex(DatabaseHelper.CN_REFERENCE)));
                 sensor.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
                 sensor.setValue(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE)));
+                sensor.setTimestamp(c.getLong(c.getColumnIndex((DatabaseHelper.CN_TIMESTAMP))));
                 Device d = getDevice(c.getLong(c.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
                 sensor.setDevice(d);
                 sensors.add(sensor);
@@ -267,13 +295,14 @@ public class DatabaseManager {
         return sensors;
     }
 
-    public int updateSensor(Long id, String reference, String description, Long deviceId, String value) {
+    public int updateSensor(Long id, String reference, String description, Long deviceId, String value, Long timestamp) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_REFERENCE, reference);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
         values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
         values.put(DatabaseHelper.CN_VALUE, value);
+        values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
         return db.update(DatabaseHelper.TABLE_SENSORS, values, DatabaseHelper.CN_ID + " = " + id, null);
     }
 
@@ -293,7 +322,7 @@ public class DatabaseManager {
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
         values.put(DatabaseHelper.CN_ACTION, action);
         values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
-        return db.insert(DatabaseHelper.TABLE_SENSORS, null, values);
+        return db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
     }
 
     public Action getAction(Long id) {
@@ -314,8 +343,7 @@ public class DatabaseManager {
         Actuator a = getActuator(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ACTUATOR_ID)));
         action.setActuator(a);
         c.close();
-        return action;
-    }
+        return action;    }
 
     public List<Action> getAllActions() {
         List<Action> actions = new ArrayList<>();
@@ -383,21 +411,12 @@ public class DatabaseManager {
         db.delete(DatabaseHelper.TABLE_ACTIONS, selection, args);
     }
 
-    // sensorData
+   // users and shared devices
 
-    public long addSensorData(LocalDateTime timestamp, String value, Long sensorId) {
-        db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_TIMESTAMP, timestamp.toString());
-        values.put(DatabaseHelper.CN_VALUE, value);
-        values.put(DatabaseHelper.CN_SENSOR_ID, sensorId);
-        return db.insert(DatabaseHelper.TABLE_SENSOR_DATA, null, values);
-    }
+    public User getUser(Long id) {
+        User user = new User();
 
-    //TODO datum sredi
-   /* public SensorData getSensorData(Long id) {
-        SensorData sensorData = new SensorData();
-        String selectQuery = "select * from " + DatabaseHelper.TABLE_SENSOR_DATA + " where " + DatabaseHelper.CN_ID + " = " + id;
+        String selectQuery = "select * from " + DatabaseHelper.TABLE_USERS + " where " + DatabaseHelper.CN_ID + " = " + id;
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -406,13 +425,199 @@ public class DatabaseManager {
         } else
             c.moveToFirst();
 
-        sensorData.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
-        sensorData.setTimestamp(LocalDateTime.parse(c.getString(c.getColumnIndex(DatabaseHelper.CN_TIMESTAMP))));
-        action.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
-        action.setAction(c.getString(c.getColumnIndex(DatabaseHelper.CN_ACTION)));
-        Actuator a = getActuator(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ACTUATOR_ID)));
-        action.setActuator(a);
+        user.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
+        user.setEmail(c.getString(c.getColumnIndex(DatabaseHelper.CN_EMAIL)));
+        user.setFirstName(c.getString(c.getColumnIndex(DatabaseHelper.CN_FIRST_NAME)));
+        user.setLastName(c.getString(c.getColumnIndex(DatabaseHelper.CN_LAST_NAME)));
+        user.setPassword(c.getString(c.getColumnIndex(DatabaseHelper.CN_PASSWORD)));
+        List<Device> devices = getSharedDevicesByUserId(user.getId());
+        user.setSharedDevices(devices);
+
         c.close();
-        return action;
-    }*/
+        return user;
+    }
+
+    public List<Device> getSharedDevicesByUserId(Long id) {
+        List<Device> devices = new ArrayList<>();
+        String query = "select * from " + DatabaseHelper.TABLE_USERS_DEVICES + " where " +
+                DatabaseHelper.CN_USER_ID + " = " + id + " and " + DatabaseHelper.CN_SHARED + " = 1";
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Device d = getDevice(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
+                devices.add(d);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return devices;
+    }
+
+    public List<Device> getSharedDevicesByUserEmail(String email) {
+        List<Device> devices = new ArrayList<>();
+        String query = "select * from " + DatabaseHelper.TABLE_USERS_DEVICES + " where " +
+                DatabaseHelper.CN_EMAIL + " = '" + email + "' and " + DatabaseHelper.CN_SHARED + " = 1";
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Device d = getDevice(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
+                devices.add(d);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return devices;
+    }
+
+    public long connectDevicesAndUsers(Long deviceId, Long userId) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_USER_ID, userId);
+        values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
+        values.put(DatabaseHelper.CN_SHARED, 0);
+        return db.insert(DatabaseHelper.TABLE_USERS_DEVICES, null, values);
+    } //TODO treba omuguciti za shared da moze da stavi
+
+
+    public User getUserByEmail(String email) {
+        User user = new User();
+
+        String selectQuery = "select * from " + DatabaseHelper.TABLE_USERS + " where " + DatabaseHelper.CN_EMAIL + " = '" +
+                email + "'";
+        Log.d("DATABASE QUERY", selectQuery);
+        db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if(c == null) {
+            return null;
+        } else
+            c.moveToFirst();
+
+        user.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
+        user.setEmail(c.getString(c.getColumnIndex(DatabaseHelper.CN_EMAIL)));
+        user.setFirstName(c.getString(c.getColumnIndex(DatabaseHelper.CN_FIRST_NAME)));
+        user.setLastName(c.getString(c.getColumnIndex(DatabaseHelper.CN_LAST_NAME)));
+        user.setPassword(c.getString(c.getColumnIndex(DatabaseHelper.CN_PASSWORD)));
+        List<Device> devices = getSharedDevicesByUserId(user.getId());
+        user.setSharedDevices(devices);
+
+        c.close();
+        return user;
+    }
+
+    public int updateUser(Long id, String email, String  password, String firstName, String lastName) { // samo za user settings
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_EMAIL, email);
+        values.put(DatabaseHelper.CN_PASSWORD, password);
+        values.put(DatabaseHelper.CN_FIRST_NAME, firstName);
+        values.put(DatabaseHelper.CN_LAST_NAME, lastName);
+        return db.update(DatabaseHelper.TABLE_USERS, values, DatabaseHelper.CN_ID + " = " + id, null);
+    }
+
+    public long addUser(String email, String password, String firstName, String lastName) { // samo za testiranje
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_EMAIL, email);
+        values.put(DatabaseHelper.CN_PASSWORD, password);
+        values.put(DatabaseHelper.CN_FIRST_NAME, firstName);
+        values.put(DatabaseHelper.CN_LAST_NAME, lastName);
+        return db.insert(DatabaseHelper.TABLE_USERS, null, values);
+    }
+
+    // rules
+
+    public long addRule(String name, String description, Long sensorId, Long actuatorId, Long userId) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_NAME, name);
+        values.put(DatabaseHelper.CN_DESCRIPTION, description);
+        values.put(DatabaseHelper.CN_USER_ID, userId);
+        long rowId = db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
+        Rule r = getRuleByName(name);
+        connectRuleAndSensor(r.getId(), sensorId);
+        connectRuleAndActuator(r.getId(), actuatorId);
+        return rowId;
+    }
+
+    public long connectRuleAndSensor(Long ruleId, Long sensorId) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_RULES_ID, ruleId);
+        values.put(DatabaseHelper.CN_SENSOR_ID, sensorId);
+        return db.insert(DatabaseHelper.TABLE_RULES_SENSORS, null, values);
+    }
+
+    private long connectRuleAndActuator(Long ruleId, Long actuatorId) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_RULES_ID, ruleId);
+        values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
+        return db.insert(DatabaseHelper.TABLE_RULES_ACTUATORS, null, values);
+    }
+
+    public Rule getRule(Long id) {
+        Rule rule = new Rule();
+        String selectQuery = "select * from " + DatabaseHelper.TABLE_RULES + " where " + DatabaseHelper.CN_ID + " = " + id;
+        Log.d("DATABASE QUERY", selectQuery);
+        db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if(c == null) {
+            return null;
+        } else
+            c.moveToFirst();
+
+        rule.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
+        rule.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
+        rule.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
+        rule.setUser(user);
+
+        c.close();
+        return rule;
+    }
+
+    public Rule getRuleByName(String name) {
+        Rule rule = new Rule();
+        String selectQuery = "select * from " + DatabaseHelper.TABLE_RULES + " where " + DatabaseHelper.CN_NAME + " = '" + name + "'";
+        Log.d("DATABASE QUERY", selectQuery);
+        db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if(c == null) {
+            return null;
+        } else
+            c.moveToFirst();
+
+        rule.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
+        rule.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
+        rule.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
+        rule.setUser(user);
+
+        c.close();
+        return rule;
+    }
+
+    public int updateRule(Long id, String name, String description) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_NAME, name);
+        values.put(DatabaseHelper.CN_DESCRIPTION, description);
+        return db.update(DatabaseHelper.TABLE_RULES, values, DatabaseHelper.CN_ID + " = " + id, null);
+    }
+
+    public void deleteRule(Long id) {
+        db = dbHelper.getWritableDatabase();
+        String selection = DatabaseHelper.CN_ID + " LIKE ?";
+        String[] args = { String.valueOf(id) };
+        db.delete(DatabaseHelper.TABLE_RULES, selection, args);
+    }
+
+
+
 }

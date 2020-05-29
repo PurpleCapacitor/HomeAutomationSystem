@@ -44,8 +44,12 @@ public class MainActivity extends BaseDrawerActivity {
         this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
         dbManager = new DatabaseManager(getApplicationContext());
 
-        dbManager.addDevice("Klima", "Description 1");
-        dbManager.addDevice("Roletna", "Description 2");
+        User user = new User(1L, "da@da", "da", "da", "da", null);
+        //dbManager.addUser("da@da", "da", "da", "da");
+        dbManager.addDevice("Klima", "Description 1", user);
+        dbManager.addDevice("Roletna", "Description 2", user);
+        //List<Device> d = dbManager.getSharedDevicesByUserId(1L);
+
 
         RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         populateList();
