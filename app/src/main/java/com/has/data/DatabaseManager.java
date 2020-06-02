@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.style.TtsSpan;
 import android.util.Log;
 
 import com.has.model.Action;
@@ -16,6 +17,11 @@ import com.has.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 public class DatabaseManager {
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
@@ -26,14 +32,27 @@ public class DatabaseManager {
 
     // devices
 
-    public long addDevice(String name, String description, User loggedUser) {
+    public long addDevice(String name, String description, User loggedUser, Long versionTimestamp) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_NAME, name);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
         long rowId = db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
         Device d = getDeviceByName(name);
         connectDevicesAndUsers(d.getId(), loggedUser.getId());
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
+        apiService.createDevice(d.getId(), name, description, versionTimestamp, loggedUser.getId()).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("Connection to server", "COMPLETED");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
         return rowId;
 
     }
@@ -52,6 +71,7 @@ public class DatabaseManager {
                 device.setId(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_ID)));
                 device.setName(cursor.getString(cursor.getColumnIndex(DatabaseHelper.CN_NAME)));
                 device.setDescription(cursor.getString(cursor.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+                device.setVersionTimestamp(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
                 devices.add(device);
             } while (cursor.moveToNext());
         }
@@ -73,6 +93,7 @@ public class DatabaseManager {
         device.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
         device.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         device.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        device.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
         c.close();
         return device;
     }
@@ -91,6 +112,7 @@ public class DatabaseManager {
         device.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
         device.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         device.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
+        device.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
         c.close();
         return device;
     }
@@ -104,6 +126,8 @@ public class DatabaseManager {
     }
 
     public void deleteDevice(Long id) {
+        //TODO kad se brise, brisi sve vezane aktuatore i senzore pa onda u tim aktuatorima brises njihove akcije i brises pravila
+        //vezana za te aktuatore i za senzore
         db = dbHelper.getWritableDatabase();
         String selection = DatabaseHelper.CN_ID + " LIKE ?";
         String[] args = { String.valueOf(id) };
@@ -520,13 +544,14 @@ public class DatabaseManager {
         return db.update(DatabaseHelper.TABLE_USERS, values, DatabaseHelper.CN_ID + " = " + id, null);
     }
 
-    public long addUser(String email, String password, String firstName, String lastName) { // samo za testiranje
+    public long addUser(String email, String password, String firstName, String lastName, Long versionTimestamp) { // samo za testiranje
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_EMAIL, email);
         values.put(DatabaseHelper.CN_PASSWORD, password);
         values.put(DatabaseHelper.CN_FIRST_NAME, firstName);
         values.put(DatabaseHelper.CN_LAST_NAME, lastName);
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
         return db.insert(DatabaseHelper.TABLE_USERS, null, values);
     }
 

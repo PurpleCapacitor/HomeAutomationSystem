@@ -44,10 +44,11 @@ public class MainActivity extends BaseDrawerActivity {
         this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
         dbManager = new DatabaseManager(getApplicationContext());
 
-        User user = new User(1L, "da@da", "da", "da", "da", null);
-        //dbManager.addUser("da@da", "da", "da", "da");
-        dbManager.addDevice("Klima", "Description 1", user);
-        dbManager.addDevice("Roletna", "Description 2", user);
+        User user = new User(1L, "da@da", "da", "da", "da", null,
+                System.currentTimeMillis());
+        dbManager.addUser("da@da", "da", "da", "da", System.currentTimeMillis());
+        dbManager.addDevice("Klima", "Description 1", user, System.currentTimeMillis());
+        dbManager.addDevice("Roletna", "Description 2", user, System.currentTimeMillis());
         //List<Device> d = dbManager.getSharedDevicesByUserId(1L);
 
 
@@ -67,10 +68,10 @@ public class MainActivity extends BaseDrawerActivity {
             }
         });
 
-        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        //GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         //Call<User> call = apiService.getAllUsers();
         //ili
-        apiService.getUser().enqueue(new Callback<User>() {
+        /*apiService.getUser().enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
@@ -81,7 +82,9 @@ public class MainActivity extends BaseDrawerActivity {
             public void onFailure(Call<User> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+
+
     }
 
     private void populateList() {

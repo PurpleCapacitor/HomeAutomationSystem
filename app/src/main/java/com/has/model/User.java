@@ -11,17 +11,19 @@ public class User {
     private String firstName;
     private String lastName;
     private List<Device> sharedDevices = new ArrayList<>();
+    private Long versionTimestamp;
 
     public User() {
     }
 
-    public User(Long id, String email, String password, String firstName, String lastName, List<Device> sharedDevices) {
+    public User(Long id, String email, String password, String firstName, String lastName, List<Device> sharedDevices, Long versionTimestamp) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.sharedDevices = sharedDevices;
+        this.versionTimestamp = versionTimestamp;
     }
 
     public Long getId() {
@@ -70,5 +72,13 @@ public class User {
 
     public void setSharedDevices(List<Device> sharedDevices) {
         this.sharedDevices = sharedDevices;
+    }
+
+    public Long getVersionTimestamp() {
+        return versionTimestamp;
+    }
+
+    public void setVersionTimestamp(Long versionTimestamp) {
+        this.versionTimestamp = versionTimestamp;
     }
 }

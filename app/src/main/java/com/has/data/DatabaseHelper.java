@@ -37,10 +37,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CN_SHARED = "shared"; // bool 0 1
     public static final String CN_USER_ID = "user_id";
     public static final String CN_RULES_ID = "rules_id";
+    public static final String CN_VERSION_TIMESTAMP = "ver_timestamp";
 
 
     private static final String CREATE_TABLE_DEVICES = "create table " + TABLE_DEVICES + "(" + CN_ID +
-            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT);";
+            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT, "
+            + CN_VERSION_TIMESTAMP + " INTEGER); ";
 
     private static final String CREATE_TABLE_ACTUATORS = "create table " + TABLE_ACTUATORS + " (" + CN_ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_REFERENCE + " TEXT NOT NULL, " + CN_VALUE +
@@ -64,7 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_TABLE_USERS = "create table " + TABLE_USERS + " (" + CN_ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             CN_EMAIL + " TEXT NOT NULL, " + CN_PASSWORD + " TEXT NOT NULL, " + CN_FIRST_NAME + " TEXT NOT NULL, " +
-            CN_LAST_NAME + " TEXT NOT NULL);";
+            CN_LAST_NAME + " TEXT NOT NULL, " + CN_VERSION_TIMESTAMP + " INTEGER); ";
 
     public static final String CREATE_TABLE_USERS_DEVICES = "create table " + TABLE_USERS_DEVICES + " (" +
             CN_USER_ID + " INTEGER, " + CN_DEVICE_ID + " INTEGER, " + CN_SHARED + " INTEGER);";

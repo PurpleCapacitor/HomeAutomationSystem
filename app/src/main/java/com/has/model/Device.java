@@ -4,11 +4,13 @@ public class Device {
     private Long id;
     private String name;
     private String description;
+    private Long versionTimestamp;
 
-    public Device(Long id, String name, String description) {
+    public Device(Long id, String name, String description, Long versionTimestamp) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.versionTimestamp = versionTimestamp;
     }
 
     public Device() {
@@ -36,5 +38,13 @@ public class Device {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getVersionTimestamp() {
+        return versionTimestamp;
+    }
+
+    public void setVersionTimestamp(Long versionTimestamp) {
+        this.versionTimestamp = versionTimestamp;
     }
 }
