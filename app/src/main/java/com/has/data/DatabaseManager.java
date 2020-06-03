@@ -14,6 +14,9 @@ import com.has.model.Rule;
 import com.has.model.Sensor;
 import com.has.model.User;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -642,6 +645,7 @@ public class DatabaseManager {
         String[] args = { String.valueOf(id) };
         db.delete(DatabaseHelper.TABLE_RULES, selection, args);
     }
+
 
 
 

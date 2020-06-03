@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked signed in", Toast.LENGTH_SHORT).show();
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
                 //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
                 apiService.login(email.getText().toString(),pass.getText().toString()).enqueue(new Callback<Void>() {

@@ -38,7 +38,6 @@ public class RegisterActivity extends AppCompatActivity {
             EditText lastName = findViewById(R.id.text_reg_last_name);
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked register", Toast.LENGTH_SHORT).show();
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
                 //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
                 apiService.register(email.getText().toString(),pass.getText().toString(),firstName.getText().toString(),lastName.getText().toString()).enqueue(new Callback<Void>() {
@@ -46,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if(response.code() == 200) {
                             Log.d("Connection to server", "200");
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                         }
                         else
