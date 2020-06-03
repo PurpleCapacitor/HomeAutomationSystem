@@ -1,5 +1,6 @@
 package com.has;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,17 +26,25 @@ import java.util.List;
 public class ActuatorActivity extends AppCompatActivity {
 
     private List<Action> actionList = new ArrayList<>();
+    private DatabaseManager dbManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actuator);
 
+        dbManager = new DatabaseManager(getApplicationContext());
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         RecyclerView actionRecyclerView = findViewById(R.id.recycler_view_actuator_activity);
-        populate();
+        Intent intent = getIntent();
+        Long id = intent.getLongExtra("actuatorId", -1L);
+        dbManager.addAction("imeakcije","de","act",id);
+
+        populate(id);
+
         RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
         actionRecyclerView.setAdapter(actionAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -52,11 +61,13 @@ public class ActuatorActivity extends AppCompatActivity {
 
     }
 
-    private void populate() {
+    private void populate(Long id) {
 
-        Action a1 = new Action("Action 1", "Description 1");
+       /* Action a1 = new Action("Action 1", "Description 1");
         Action a2 = new Action("Action 2", "Description 2");
         actionList.add(a1);
-        actionList.add(a2);
+        actionList.add(a2);*/
+
+        actionList = dbManager.getActionsByActuator(id);
     }
 }

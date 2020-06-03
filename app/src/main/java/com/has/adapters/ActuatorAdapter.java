@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.has.ActuatorActivity;
+import com.has.DeviceInfoActivity;
 import com.has.R;
 import com.has.model.Actuator;
 
@@ -55,7 +56,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                                additionalInfo();
+                                additionalInfo(actuator.getId());
                                 break;
                             case R.id.edit:
                                 Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
@@ -74,8 +75,9 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
 
     }
 
-    private void additionalInfo() {
+    private void additionalInfo(Long id) {
         Intent intent = new Intent(context, ActuatorActivity.class);
+        intent.putExtra("actuatorId", id);
         context.startActivity(intent);
     }
 
@@ -97,6 +99,4 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             popupMenu = itemView.findViewById(R.id.button_popup_menu);
         }
     }
-
-
 }

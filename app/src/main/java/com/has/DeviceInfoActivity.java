@@ -18,6 +18,9 @@ import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
 import com.has.model.Device;
 import com.has.model.Sensor;
+import com.has.settings.UserProfileActivity;
+import com.has.user.LoginActivity;
+import com.has.user.RegisterActivity;
 
 import java.util.ArrayList;
 import java.util.List;

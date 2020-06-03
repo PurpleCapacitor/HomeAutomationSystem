@@ -22,4 +22,15 @@ public interface GetData {
                             @Field("description") String description,
                             @Field("versionTimestamp") Long versionTimestamp,
                             @Field("userId") Long userId);
+
+    @POST("user/login")
+    @FormUrlEncoded
+    Call<Void> login(@Field("email") String email, @Field("password") String password);
+
+    @POST("user/register")
+    @FormUrlEncoded
+    Call<Void> register(@Field("email") String email,
+                        @Field("password") String password,
+                        @Field("firstName") String firstName,
+                        @Field("lastName") String lastName);
 }
