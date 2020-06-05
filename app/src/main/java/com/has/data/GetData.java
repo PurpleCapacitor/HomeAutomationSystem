@@ -5,6 +5,8 @@ import com.has.model.Device;
 import com.has.model.Sensor;
 import com.has.model.User;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -23,7 +25,7 @@ public interface GetData {
     //DEVICES
 
     @GET("devices")
-    Call<Device> getDevices();
+    Call<List<Device>> getDevices();
 
     @GET("devices/{id}")
     Call<Device> getDevice(@Path("id") String id);
@@ -33,11 +35,10 @@ public interface GetData {
 
     @POST("devices")
     @FormUrlEncoded
-    Call<Void> createDevice(@Field("id") Long id,
-                            @Field("name") String name,
+    Call<Long> createDevice(@Field("name") String name,
                             @Field("description") String description,
-                            @Field("versionTimestamp") Long versionTimestamp,
-                            @Field("userId") Long userId);
+                            @Field("userId") Long userId,
+                            @Field("versionTimestamp") Long versionTimestamp);
 
     @PUT("devices/{id}")
     @FormUrlEncoded
@@ -105,7 +106,7 @@ public interface GetData {
     //USER
     @POST("user/login")
     @FormUrlEncoded
-    Call<Void> login(@Field("email") String email, @Field("password") String password);
+    Call<Long> login(@Field("email") String email, @Field("password") String password);
 
     @POST("user/register")
     @FormUrlEncoded

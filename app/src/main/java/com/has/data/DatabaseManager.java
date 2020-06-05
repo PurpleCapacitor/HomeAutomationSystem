@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.style.TtsSpan;
 import android.util.Log;
 
 import com.has.model.Action;
@@ -14,9 +13,6 @@ import com.has.model.Rule;
 import com.has.model.Sensor;
 import com.has.model.User;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,29 +31,41 @@ public class DatabaseManager {
 
     // devices
 
-    public long addDevice(String name, String description, User loggedUser, Long versionTimestamp) {
+    public void addDevice(String name, String description, Long loggedUserId, Long versionTimestamp) {
+        //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.createDevice(name, description, loggedUserId, versionTimestamp)
+                .enqueue(new Callback<Long>() {
+                    @Override
+                    public void onResponse(Call<Long> call, Response<Long> response) {
+                        response.body();
+                        db = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(DatabaseHelper.CN_ID, response.body());
+                        values.put(DatabaseHelper.CN_NAME, name);
+                        values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+                        db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
+                        connectDevicesAndUsers(response.body(), loggedUserId);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Long> call, Throwable t) {
+
+                    }
+
+                });
+    }
+
+    public void addDeviceAndroid(Device device, Long loggedUserId) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_NAME, name);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
-        long rowId = db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
-        Device d = getDeviceByName(name);
-        connectDevicesAndUsers(d.getId(), loggedUser.getId());
-        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-        //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
-        apiService.createDevice(d.getId(), name, description, versionTimestamp, loggedUser.getId()).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d("Connection to server", "COMPLETED");
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-            }
-        });
-        return rowId;
-
+        values.put(DatabaseHelper.CN_ID, device.getId());
+        values.put(DatabaseHelper.CN_NAME, device.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, device.getDescription());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, device.getVersionTimestamp());
+        db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
+        connectDevicesAndUsers(device.getId(), loggedUserId);
     }
 
     public List<Device> getAllDevices() {
@@ -81,6 +89,27 @@ public class DatabaseManager {
         cursor.close();
         return devices;
     }
+
+    public List<Device> getDevicesByUserId(Long id) {
+        List<Device> devices = new ArrayList<>();
+        String query = "select * from " + DatabaseHelper.TABLE_USERS_DEVICES + " where " +
+                DatabaseHelper.CN_USER_ID + " = " + id;
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Device d = getDevice(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
+                devices.add(d);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return devices;
+    }
+
+
 
     public Device getDevice(Long id) {
         Device device = new Device();
