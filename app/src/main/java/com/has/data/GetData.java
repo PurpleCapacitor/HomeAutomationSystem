@@ -27,6 +27,9 @@ public interface GetData {
     @GET("devices")
     Call<List<Device>> getDevices();
 
+    @GET("devices/users/{id}")
+    Call<List<Device>> getDevicesByUserId(@Path("id") Long id);
+
     @GET("devices/{id}")
     Call<Device> getDevice(@Path("id") String id);
 

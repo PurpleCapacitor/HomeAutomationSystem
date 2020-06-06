@@ -13,15 +13,11 @@ import com.has.data.DatabaseManager;
 import com.has.data.GetData;
 import com.has.data.RetrofitClient;
 import com.has.model.Device;
-import com.has.model.User;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PopulateDevices extends AsyncTask<Long, Void, Void> {
@@ -43,13 +39,29 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
     protected Void doInBackground(Long... longs) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         try {
-            Response<List<Device>> response = apiService.getDevices().execute();
-            contextRef.get().deleteDatabase("HomeAutomation.db"); //TODO za testiranje
+            Response<List<Device>> response = apiService.getDevicesByUserId(longs[0]).execute();
             dbManager = new DatabaseManager(contextRef.get());
             userId = longs[0];
-            for(int i = 0; i < response.body().size(); i++) {
-                Log.d("Database insert", "Current " + i);
-                dbManager.addDeviceAndroid(response.body().get(i), longs[0]);
+            List<Device> appDevices = dbManager.getDevicesByUserId(userId);
+            if(appDevices.size() == response.body().size()) {
+                for (Device d : appDevices) {
+                    for (Device backend : response.body()) {
+                        if (d.getVersionTimestamp() < backend.getVersionTimestamp()) {
+                            dbManager.updateDeviceAndroid(backend);
+                        }
+                    }
+                }
+            } else {
+                for (Device d : appDevices) {
+                    for (Device backend : response.body()) {
+                        if (!d.getId().equals(backend.getId())) {
+                            dbManager.addDeviceAndroid(backend, userId);
+                        } else if (d.getVersionTimestamp() < backend.getVersionTimestamp()) {
+                                dbManager.updateDeviceAndroid(backend);
+                        }
+
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,7 +88,5 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
         recyclerView.setAdapter(deviceAdapter);
 
     }
-
-
 
 }

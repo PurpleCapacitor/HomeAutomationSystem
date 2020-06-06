@@ -38,10 +38,10 @@ public class MainActivity extends BaseDrawerActivity {
 
         drawer.addView(contentView, 0);
         navigationView.setCheckedItem(R.id.nav_activity1);
+        this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
         DatabaseManager dbManager = new DatabaseManager(getApplicationContext());
-        //dbManager.addUser("da@da", "da", "da", "da", System.currentTimeMillis());
-        /*dbManager.addDevice("Klima", "Description 1", user, System.currentTimeMillis());*/
-        //dbManager.addDevice("Roletna", "Description 2", user, System.currentTimeMillis());
+        Device d = new Device(1L, "Klima", "dada", System.currentTimeMillis());
+        dbManager.addDeviceAndroid(d,  1L);
 
         RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);

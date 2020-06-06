@@ -157,6 +157,15 @@ public class DatabaseManager {
         return db.update(DatabaseHelper.TABLE_DEVICES, values, DatabaseHelper.CN_ID + " = " + id, null);
     }
 
+    public int updateDeviceAndroid(Device device) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_NAME, device.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, device.getDescription());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, device.getVersionTimestamp());
+        return db.update(DatabaseHelper.TABLE_DEVICES, values, DatabaseHelper.CN_ID + " = " + device.getId(), null);
+    }
+
     public void deleteDevice(Long id) {
         //TODO kad se brise, brisi sve vezane aktuatore i senzore pa onda u tim aktuatorima brises njihove akcije i brises pravila
         //vezana za te aktuatore i za senzore

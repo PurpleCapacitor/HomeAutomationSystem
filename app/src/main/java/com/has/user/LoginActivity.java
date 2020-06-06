@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -59,10 +60,16 @@ public class LoginActivity extends AppCompatActivity {
                 apiService.login(email.getText().toString(),pass.getText().toString()).enqueue(new Callback<Long>() {
                     @Override
                     public void onResponse(Call<Long> call, Response<Long> response) {
+                        if(response.code() == 200) {
                             Log.d("Connection to server", "200");
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.putExtra("currentUser", response.body());
                             startActivity(intent);
+                        } else {
+                            Log.d("Login credentials", "failed");
+                            Toast.makeText(LoginActivity.this, "Login unsuccessful", Toast.LENGTH_LONG).show();
+                        }
+
                     }
 
                     @Override
