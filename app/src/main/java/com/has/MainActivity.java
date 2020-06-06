@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,6 +30,8 @@ import java.util.List;
 public class MainActivity extends BaseDrawerActivity {
 
     private List<Device> deviceList = new ArrayList<>();
+    private DatabaseManager dbManager;
+    private Long currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,7 @@ public class MainActivity extends BaseDrawerActivity {
         deviceRecyclerView.setLayoutManager(layoutManager);
 
         Intent intent = getIntent();
-        Long currentUserId = intent.getLongExtra("currentUser", -1L);
+        currentUserId = intent.getLongExtra("currentUser", -1L);
 
         new PopulateDevices(this, deviceRecyclerView).execute(currentUserId);
         RecyclerView.Adapter deviceAdapter = new DeviceAdapter(deviceList, this);
@@ -56,16 +60,30 @@ public class MainActivity extends BaseDrawerActivity {
 
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(v -> openAddNewDeviceDialog());
+    }
 
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked add", Toast.LENGTH_SHORT).show();
+    private void openAddNewDeviceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_add_device, null);
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        builder.setView(view)
+            .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+            .setPositiveButton(getResources().getString(R.string.button_add), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String deviceName = deviceNameEditText.getText().toString();
+            String deviceDesc = deviceDescEditText.getText().toString();
+            if (deviceName.length() != 0 && deviceDesc.length() != 0) {
+                dbManager.addDevice(deviceName, deviceDesc, currentUserId, System.currentTimeMillis());
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
     }
 
     private static class ConnectionTest extends AsyncTask<Void, Void, Boolean> {

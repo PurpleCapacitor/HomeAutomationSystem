@@ -15,6 +15,15 @@
     <string name="activeRules">Active rules</string>
     <string name="title_activity_user_profile">Profile</string>
 
+    <!-- Add Device-->
+    <string name="device_name">Device name</string>
+    <string name="device_description">Device description</string>
+    <string name="button_add">Add</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="add_device_title">Add new device</string>
+    <string name="edit_device_title">Edit device</string>
+
     <!-- Preference Titles -->
     <string name="user_profile_header">User profile</string>
     <string name="devices_header">Devices</string>

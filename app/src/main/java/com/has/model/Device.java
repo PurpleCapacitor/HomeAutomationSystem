@@ -1,6 +1,8 @@
 package com.has.model;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
     private Long id;
     private String name;
     private String description;

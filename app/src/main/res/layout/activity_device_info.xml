@@ -6,7 +6,7 @@
 
 
     <include
-        layout="@layout/toolbar"/>
+        layout="@layout/toolbar_device"/>
 
     <TextView
         android:id="@+id/text_device_name_info"

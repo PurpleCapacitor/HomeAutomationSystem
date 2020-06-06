@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.has.DeviceInfoActivity;
 import com.has.R;
+import com.has.data.DatabaseManager;
 import com.has.model.Device;
 
 import java.util.List;
@@ -25,6 +25,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
 
     private List<Device> deviceList;
     private Context context;
+    private DatabaseManager databaseManager;
 
     public DeviceAdapter(List<Device> deviceList, Context context) {
         this.deviceList = deviceList;
@@ -60,33 +61,28 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         final Device device = deviceList.get(position);
         holder.heading.setText(device.getName());
         holder.description.setText(device.getDescription());
-        holder.popupMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
-                popupMenu.getMenu().add(Menu.NONE, R.id.share, 2, "Share");
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.see_more:
-                                detailedView(device.getId());
-                                break;
-                            case R.id.share:
-                                Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
-                                break;
-                            case R.id.delete:
-                                Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
-                                break;
-                        }
-                        return false;
-                    }
-                });
+        holder.popupMenu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
+            popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
+            popupMenu.getMenu().add(Menu.NONE, R.id.share, 2, "Share");
+            popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.see_more:
+                        detailedView(device);
+                        break;
+                    case R.id.share:
+                        Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.delete:
+                        databaseManager.deleteDevice(device.getId());
+                        Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
+                        break;
+                }
+                return false;
+            });
 
-                popupMenu.show();
-            }
+            popupMenu.show();
         });
     }
 
@@ -95,9 +91,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         return deviceList.size();
     }
 
-    private void detailedView(Long id) {
+    private void detailedView(Device device) {
         Intent intent = new Intent(context, DeviceInfoActivity.class);
-        intent.putExtra("deviceId", id);
+        intent.putExtra("device", device);
         context.startActivity(intent);
     }
 

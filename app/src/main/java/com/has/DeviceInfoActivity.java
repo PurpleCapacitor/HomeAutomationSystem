@@ -3,9 +3,15 @@ package com.has;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,9 +24,6 @@ import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
 import com.has.model.Device;
 import com.has.model.Sensor;
-import com.has.settings.UserProfileActivity;
-import com.has.user.LoginActivity;
-import com.has.user.RegisterActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private List<Sensor> sensorList = new ArrayList<>();
     private List<Actuator> actuatorList = new ArrayList<>();
     private DatabaseManager dbManager;
+    private Long deviceId;
+    private Device device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +52,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
         dbManager.addSensor("Humidity", "humidity", devices.get(0).getId(), "60%", System.currentTimeMillis());
 
         Intent intent = getIntent();
-        Long id = intent.getLongExtra("deviceId", -1L);
-        populateActuators(id);
+        device = (Device)intent.getSerializableExtra("device");
+        deviceId = device.getId();
+        populateActuators(deviceId);
 
         //test
         /*int i = dbManager.updateActuator(1L, "Bex", "NOM", devices.get(0).getId(), "6");
@@ -56,7 +62,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         dbManager.deleteActuator(2L);*/
 
         RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
-        populateSenors(id);
+        populateSenors(deviceId);
         RecyclerView.Adapter sensorAdapter = new SensorAdapter(sensorList, this);
         sensorRecyclerView.setAdapter(sensorAdapter);
         RecyclerView.LayoutManager sensorLayoutManager = new LinearLayoutManager(this);
@@ -84,6 +90,55 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void populateSenors(Long id) {
         sensorList = dbManager.getSensorsByDeviceId(id);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.device_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_edit) {
+            openEditDeviceDialog();
+        } else if (id == R.id.action_delete) {
+            dbManager.deleteDevice(deviceId);
+            // return back to device list
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openEditDeviceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceInfoActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_add_device, null);
+        TextView title = view.findViewById(R.id.text_device_title);
+        title.setText(R.string.edit_device_title);
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        deviceNameEditText.setText(device.getName());
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        deviceDescEditText.setText(device.getDescription());
+        builder.setView(view)
+                .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+                .setPositiveButton(getResources().getString(R.string.button_edit), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String deviceName = deviceNameEditText.getText().toString();
+            String deviceDesc = deviceDescEditText.getText().toString();
+            if (deviceName.length() != 0 && deviceDesc.length() != 0) {
+                dbManager.updateDevice(deviceId, deviceName, deviceDesc);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
