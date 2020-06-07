@@ -15,4 +15,8 @@
     <item
         android:id="@+id/delete"
         android:title="@string/delete"/>
+
+    <item
+        android:id="@+id/add_sensor_and_actuator"
+        android:title="@string/add_sensor_and_actuator"/>
 </menu>

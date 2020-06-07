@@ -30,6 +30,10 @@
     <string name="add_actuator">Add actuator</string>
     <string name="edit_actuator">Edit actuator</string>
     <string name="add_action">Add action</string>
+    <string name="add_rule">Add rule</string>
+    <string name="edit_rule">Edit rule</string>
+
+
     <string name="edit_action">Edit action</string>
 
     <!-- Preference Titles -->
@@ -58,6 +62,8 @@
     <string name="ham">Home Automation Application</string>
     <string name="devices">Devices</string>
     <string name="settings">Settings</string>
+    <string name="add_sensor_and_actuator">Add sensor and actuator</string>
+
 
     <!-- Settings-->
     <string name="title_activity_settings">Settings</string>
