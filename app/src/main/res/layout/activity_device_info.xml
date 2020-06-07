@@ -30,59 +30,84 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"/>
 
-    <TextView
-        android:id="@+id/text_device_info_subtitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/text_device_info_subtitle_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_below="@id/text_device_description_info"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:text="@string/sensors"
-        android:textColor="@color/colorPrimary"
-        android:textAppearance="?android:textAppearanceListItem"/>
+        android:layout_marginEnd="4dp">
+
+        <TextView
+            android:id="@+id/text_device_info_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sensors"
+            android:textColor="@color/colorPrimary"
+            android:textAppearance="?android:textAppearanceListItem"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button_add_sensor"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/round_button"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:drawableLeft="@drawable/ic_add_24dp">
+        </Button>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_devices_info_activity_sensors"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="-1dp"
-        android:layout_below="@id/text_device_info_subtitle" />
+        android:layout_below="@id/text_device_info_subtitle_container" />
 
-    <TextView
-        android:id="@+id/text_device_info_subtitle2"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/recycler_view_devices_info_activity_sensors"
+        android:orientation="horizontal"
+        android:id="@+id/text_device_info_subtitle2_container"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="@string/actuators"
-        android:textColor="@color/colorPrimary"
-        android:textAppearance="?android:textAppearanceListItem"/>
+        android:layout_below="@id/recycler_view_devices_info_activity_sensors">
+
+        <TextView
+            android:id="@+id/text_device_info_subtitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/actuators"
+            android:textColor="@color/colorPrimary"
+            android:textAppearance="?android:textAppearanceListItem"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button_add_actuator"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/round_button"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:drawableLeft="@drawable/ic_add_24dp">
+        </Button>
+    </LinearLayout>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_devices_info_activity_actuators"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="-1dp"
-        android:layout_below="@id/text_device_info_subtitle2" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_button_add"
-        android:layout_width="269dp"
-        android:layout_height="267dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="23dp"
-        android:layout_marginBottom="26dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:src="@drawable/ic_add_24dp"
-        android:clickable="true"
-        android:focusable="true" />
-
+        android:layout_below="@id/text_device_info_subtitle2_container" />
 
 
 </RelativeLayout>

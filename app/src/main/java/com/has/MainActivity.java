@@ -1,13 +1,9 @@
 package com.has;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -23,9 +19,6 @@ import com.has.async.PopulateDevices;
 import com.has.data.DatabaseManager;
 import com.has.model.Device;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +27,8 @@ public class MainActivity extends BaseDrawerActivity {
     private List<Device> deviceList = new ArrayList<>();
     private DatabaseManager dbManager;
     private Long currentUserId;
+    private RecyclerView deviceRecyclerView;
+    private RecyclerView.Adapter deviceAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +41,7 @@ public class MainActivity extends BaseDrawerActivity {
         navigationView.setCheckedItem(R.id.nav_activity1);
 
         //this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
-        RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
+        deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         deviceRecyclerView.setLayoutManager(layoutManager);
 
@@ -54,7 +49,7 @@ public class MainActivity extends BaseDrawerActivity {
         currentUserId = sharedPreferences.getLong("currentUser", 0);
 
         new PopulateDevices(this, deviceRecyclerView).execute(currentUserId);
-        RecyclerView.Adapter deviceAdapter = new DeviceAdapter(deviceList, this);
+        deviceAdapter = new DeviceAdapter(deviceList, this);
         deviceRecyclerView.setAdapter(deviceAdapter);
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
@@ -79,6 +74,9 @@ public class MainActivity extends BaseDrawerActivity {
             if (deviceName.length() != 0 && deviceDesc.length() != 0) {
                 dbManager = new DatabaseManager(getApplicationContext());
                 dbManager.addDevice(deviceName, deviceDesc, currentUserId, System.currentTimeMillis());
+
+                // update device display
+                new PopulateDevices(this, deviceRecyclerView).execute(currentUserId);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();

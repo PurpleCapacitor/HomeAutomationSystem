@@ -1,6 +1,5 @@
 package com.has.model;
 
-import java.util.Calendar;
 
 public class Sensor {
 

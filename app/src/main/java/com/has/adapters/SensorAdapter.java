@@ -7,17 +7,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import com.has.DeviceInfoActivity;
 import com.has.R;
 import com.has.SensorActivity;
+import com.has.data.DatabaseManager;
 import com.has.model.Sensor;
 
 import java.util.List;
@@ -26,10 +30,12 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
     private List<Sensor> sensorList;
     private Context context;
+    private DatabaseManager dbManager;
 
     public SensorAdapter(List<Sensor> sensorList, Context context) {
         this.sensorList = sensorList;
         this.context = context;
+        this.dbManager = new DatabaseManager(context.getApplicationContext());
     }
 
     public static class SensorViewHolder extends ViewHolder {
@@ -73,9 +79,12 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
                                additionalInfo();
                                 break;
                             case R.id.edit:
-                                Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
+                                openEditSensorDialog(sensor, position);
                                 break;
                             case R.id.delete:
+                                dbManager.deleteSensor(sensor.getId());
+                                sensorList.remove(position);
+                                notifyItemRemoved(position);
                                 Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
                                 break;
                         }
@@ -84,6 +93,43 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
                 });
 
                 popupMenu.show();
+            }
+        });
+    }
+
+    private void openEditSensorDialog(Sensor sensor, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_add_sensor_actuator, null);
+        TextView title = view.findViewById(R.id.text_device_title);
+        title.setText(R.string.edit_sensor);
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        deviceNameEditText.setText(sensor.getReference());
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        deviceDescEditText.setText(sensor.getDescription());
+        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
+        deviceValueEditText.setText(sensor.getValue());
+        builder.setView(view)
+                .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+                .setPositiveButton(context.getResources().getString(R.string.button_edit), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String deviceName = deviceNameEditText.getText().toString();
+            String deviceDesc = deviceDescEditText.getText().toString();
+            String value = deviceValueEditText.getText().toString();
+            if (deviceName.length() != 0 && deviceDesc.length() != 0 && value.length() != 0) {
+                dbManager.updateSensor(sensor.getId(), deviceName, deviceDesc, sensor.getDevice().getId(), value, System.currentTimeMillis());
+
+                //update sensor data
+                Sensor updatedSensor = sensorList.get(position);
+                updatedSensor.setReference(deviceName);
+                updatedSensor.setDescription(deviceDesc);
+                updatedSensor.setValue(value);
+                notifyItemChanged(position);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(context.getApplicationContext(), "Please fill in sensor data", Toast.LENGTH_SHORT).show();
             }
         });
     }

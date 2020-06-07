@@ -7,18 +7,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.has.ActuatorActivity;
 import com.has.DeviceInfoActivity;
 import com.has.R;
+import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
+import com.has.model.Sensor;
 
 import java.util.List;
 
@@ -26,10 +30,12 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
 
     private List<Actuator> actuatorList;
     private Context context;
+    private DatabaseManager dbManager;
 
     public ActuatorAdapter(List<Actuator> actuatorList, Context context) {
         this.actuatorList = actuatorList;
         this.context = context;
+        this.dbManager = new DatabaseManager(context.getApplicationContext());
     }
 
     @NonNull
@@ -59,9 +65,12 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
                                 additionalInfo(actuator.getId());
                                 break;
                             case R.id.edit:
-                                Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
+                                openEditActuatorDialog(actuator, position);
                                 break;
                             case R.id.delete:
+                                dbManager.deleteActuator(actuator.getId());
+                                actuatorList.remove(position);
+                                notifyItemRemoved(position);
                                 Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
                                 break;
                         }
@@ -73,6 +82,43 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             }
         });
 
+    }
+
+    private void openEditActuatorDialog(Actuator actuator, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_add_sensor_actuator, null);
+        TextView title = view.findViewById(R.id.text_device_title);
+        title.setText(R.string.edit_actuator);
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        deviceNameEditText.setText(actuator.getReference());
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        deviceDescEditText.setText(actuator.getDescription());
+        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
+        deviceValueEditText.setText(actuator.getValue());
+        builder.setView(view)
+                .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+                .setPositiveButton(context.getResources().getString(R.string.button_edit), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String deviceName = deviceNameEditText.getText().toString();
+            String deviceDesc = deviceDescEditText.getText().toString();
+            String value = deviceValueEditText.getText().toString();
+            if (deviceName.length() != 0 && deviceDesc.length() != 0 && value.length() != 0) {
+                dbManager.updateActuator(actuator.getId(), deviceName, deviceDesc, actuator.getDevice().getId(), value);
+
+                //update actuator
+                Actuator updatedActuator = actuatorList.get(position);
+                updatedActuator.setReference(deviceName);
+                updatedActuator.setDescription(deviceDesc);
+                updatedActuator.setValue(value);
+                notifyItemChanged(position);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(context.getApplicationContext(), "Please fill in actuator data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void additionalInfo(Long id) {

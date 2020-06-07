@@ -3,11 +3,11 @@ package com.has;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +18,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
 import com.has.data.DatabaseManager;
@@ -37,6 +36,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private Long deviceId;
     private Device device;
     private Long currentUserId;
+    private RecyclerView.Adapter sensorAdapter, actuatorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,33 +63,31 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
         RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
         populateSenors(deviceId);
-        RecyclerView.Adapter sensorAdapter = new SensorAdapter(sensorList, this);
+        sensorAdapter = new SensorAdapter(sensorList, this);
         sensorRecyclerView.setAdapter(sensorAdapter);
         RecyclerView.LayoutManager sensorLayoutManager = new LinearLayoutManager(this);
         sensorRecyclerView.setLayoutManager(sensorLayoutManager);
 
         RecyclerView actuatorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_actuators);
-        RecyclerView.Adapter actuatorAdapter = new ActuatorAdapter(actuatorList, this);
+        actuatorAdapter = new ActuatorAdapter(actuatorList, this);
         actuatorRecyclerView.setAdapter(actuatorAdapter);
         RecyclerView.LayoutManager actuatorLayoutManager = new LinearLayoutManager(this);
         actuatorRecyclerView.setLayoutManager(actuatorLayoutManager);
 
-        FloatingActionButton addButton = findViewById(R.id.floating_button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked add", Toast.LENGTH_SHORT).show();
-            }
-        });
+        Button addSensor = findViewById(R.id.button_add_sensor);
+        Button addActuator = findViewById(R.id.button_add_actuator);
+        addSensor.setOnClickListener(view -> openAddSensorDialog());
+        addActuator.setOnClickListener(view -> openAddActuatorDialog());
     }
 
     private void populateActuators(Long id) {
-       actuatorList = dbManager.getActuatorsByDeviceId(id);
+        actuatorList.clear();
+        actuatorList.addAll(dbManager.getActuatorsByDeviceId(id));
     }
 
     private void populateSenors(Long id) {
-        sensorList = dbManager.getSensorsByDeviceId(id);
+        sensorList.clear();
+        sensorList.addAll(dbManager.getSensorsByDeviceId(id));
     }
 
     @Override
@@ -126,8 +124,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
         deviceDescEditText.setText(device.getDescription());
         builder.setView(view)
-                .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
-                .setPositiveButton(getResources().getString(R.string.button_edit), null);
+                .setNegativeButton(R.string.button_cancel, (dialogInterface, i) -> {})
+                .setPositiveButton(R.string.button_edit, null);
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -139,6 +137,68 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openAddSensorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceInfoActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_add_sensor_actuator, null);
+
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
+        TextView title = view.findViewById(R.id.text_device_title);
+        title.setText(R.string.add_sensor);
+        builder.setView(view)
+                .setNegativeButton(R.string.button_cancel, (dialogInterface, i) -> {})
+                .setPositiveButton(R.string.button_add, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String name = deviceNameEditText.getText().toString();
+            String description = deviceDescEditText.getText().toString();
+            String value = deviceValueEditText.getText().toString();
+            if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
+                dbManager.addSensor(name, description, deviceId, value, System.currentTimeMillis());
+                //refresh sensor data
+                populateSenors(deviceId);
+                sensorAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getApplicationContext(), "Please fill in all sensor data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openAddActuatorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceInfoActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_add_sensor_actuator, null);
+
+        EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
+        EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
+        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
+        TextView title = view.findViewById(R.id.text_device_title);
+        title.setText(R.string.add_actuator);
+        builder.setView(view)
+                .setNegativeButton(R.string.button_cancel, (dialogInterface, i) -> {})
+                .setPositiveButton(R.string.button_add, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String name = deviceNameEditText.getText().toString();
+            String description = deviceDescEditText.getText().toString();
+            String value = deviceValueEditText.getText().toString();
+            if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
+                dbManager.addActuator(name, description, deviceId, value);
+                //refresh actuator data
+                populateActuators(deviceId);
+                actuatorAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getApplicationContext(), "Please fill in all actuator data", Toast.LENGTH_SHORT).show();
             }
         });
     }
