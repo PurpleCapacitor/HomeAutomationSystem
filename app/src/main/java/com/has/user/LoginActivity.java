@@ -1,9 +1,7 @@
 package com.has.user;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,11 +16,8 @@ import com.has.R;
 import com.has.data.DatabaseManager;
 import com.has.data.GetData;
 import com.has.data.RetrofitClient;
-import com.has.model.Device;
 import com.has.model.User;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;

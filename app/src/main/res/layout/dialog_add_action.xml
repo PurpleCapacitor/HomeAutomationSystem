@@ -11,31 +11,27 @@
         android:id="@+id/text_device_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="9dp"
         android:ems="10"
         android:hint="@string/device_name"
-        app:layout_constraintBottom_toTopOf="@+id/text_device_description"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_device_title"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/text_device_title" />
 
     <EditText
         android:id="@+id/text_device_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="324dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="9dp"
         android:ems="10"
         android:hint="@string/device_description"
         android:inputType="textMultiLine"
-        android:lines="2"
         android:maxLines="3"
-        android:minLines="2"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.315"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_device_name" />
 
@@ -43,14 +39,28 @@
         android:id="@+id/text_device_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="73dp"
-        android:text="@string/add_device_title"
+        android:layout_marginTop="32dp"
+        android:text="Title"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/text_device_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/text_device_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:ems="10"
+        android:hint="@string/device_action"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.684"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_device_description"
+        app:layout_constraintVertical_bias="0.046" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

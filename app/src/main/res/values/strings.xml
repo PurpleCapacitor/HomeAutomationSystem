@@ -16,6 +16,7 @@
     <string name="title_activity_user_profile">Profile</string>
 
     <!-- Add Device-->
+    <string name="device_action">Value</string>
     <string name="device_value">Value</string>
     <string name="device_name">Name</string>
     <string name="device_description">Description</string>
@@ -28,6 +29,8 @@
     <string name="edit_sensor">Edit sensor</string>
     <string name="add_actuator">Add actuator</string>
     <string name="edit_actuator">Edit actuator</string>
+    <string name="add_action">Add action</string>
+    <string name="edit_action">Edit action</string>
 
     <!-- Preference Titles -->
     <string name="user_profile_header">User profile</string>
