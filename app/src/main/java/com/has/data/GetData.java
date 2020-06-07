@@ -13,6 +13,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -34,7 +35,7 @@ public interface GetData {
     Call<Device> getDevice(@Path("id") String id);
 
     @DELETE("devices/{id}")
-    Call<Device> deleteDevice(@Path("id") String id);
+    Call<Void> deleteDevice(@Path("id") Long id);
 
     @POST("devices")
     @FormUrlEncoded
@@ -45,7 +46,8 @@ public interface GetData {
 
     @PUT("devices/{id}")
     @FormUrlEncoded
-    Call<Void> updateDevice(@Field("name") String name,
+    Call<Void> updateDevice(@Path("id") Long id,
+                            @Field("name") String name,
                             @Field("description") String description,
                             @Field("versionTimestamp") Long versionTimestamp,
                             @Field("userId") Long userId);

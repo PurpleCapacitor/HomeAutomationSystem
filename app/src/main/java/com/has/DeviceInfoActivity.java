@@ -1,6 +1,7 @@
 package com.has;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private DatabaseManager dbManager;
     private Long deviceId;
     private Device device;
+    private Long currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +58,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
         deviceId = device.getId();
         populateActuators(deviceId);
 
-        //test
-        /*int i = dbManager.updateActuator(1L, "Bex", "NOM", devices.get(0).getId(), "6");
-        Log.d("Update int value", "is " + i);
-        dbManager.deleteActuator(2L);*/
+        SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
+        currentUserId = sharedPreferences.getLong("currentUser", 0);
 
         RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
         populateSenors(deviceId);
@@ -106,6 +106,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         if (id == R.id.action_edit) {
             openEditDeviceDialog();
         } else if (id == R.id.action_delete) {
+            dbManager = new DatabaseManager(getApplicationContext());
             dbManager.deleteDevice(deviceId);
             // return back to device list
             finish();
@@ -133,7 +134,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0) {
-                dbManager.updateDevice(deviceId, deviceName, deviceDesc);
+                dbManager = new DatabaseManager(getApplicationContext());
+                dbManager.updateDevice(deviceId, deviceName, deviceDesc, System.currentTimeMillis(), currentUserId);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();

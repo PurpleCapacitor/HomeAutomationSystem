@@ -39,11 +39,12 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
     protected Void doInBackground(Long... longs) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         try {
+            //contextRef.get().deleteDatabase("HomeAutomation.db"); //TODO za testiranje
             Response<List<Device>> response = apiService.getDevicesByUserId(longs[0]).execute();
             dbManager = new DatabaseManager(contextRef.get());
             userId = longs[0];
             List<Device> appDevices = dbManager.getDevicesByUserId(userId);
-            if(appDevices.size() == response.body().size()) {
+            if (appDevices.size() == response.body().size()) {
                 for (Device d : appDevices) {
                     for (Device backend : response.body()) {
                         if (d.getVersionTimestamp() < backend.getVersionTimestamp()) {
@@ -52,16 +53,23 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
                     }
                 }
             } else {
-                for (Device d : appDevices) {
+                if (appDevices.isEmpty()) {
                     for (Device backend : response.body()) {
-                        if (!d.getId().equals(backend.getId())) {
-                            dbManager.addDeviceAndroid(backend, userId);
-                        } else if (d.getVersionTimestamp() < backend.getVersionTimestamp()) {
+                        dbManager.addDeviceAndroid(backend, userId);
+                    }
+                } else {
+                    for (Device d : appDevices) {
+                        for (Device backend : response.body()) {
+                            if (!d.getId().equals(backend.getId())) {
+                                dbManager.addDeviceAndroid(backend, userId);
+                            } else if (d.getVersionTimestamp() < backend.getVersionTimestamp()) {
                                 dbManager.updateDeviceAndroid(backend);
-                        }
+                            }
 
+                        }
                     }
                 }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,17 +80,22 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
 
     @Override
     protected void onPreExecute() {
-        pd = new ProgressDialog(contextRef.get());
+        /*pd = new ProgressDialog(contextRef.get());
         pd.setTitle("Loading");
         pd.setMessage("Sync in progress");
-        pd.show();
+        if (pd != null && pd.isShowing()) {
+            pd.dismiss();
+        } else {
+            pd.show();
+        }*/
     }
 
 
     @Override
     protected void onPostExecute(Void aVoid) {
         dbManager = new DatabaseManager(contextRef.get());
-        pd.dismiss();
+        /*pd = new ProgressDialog(contextRef.get());
+        pd.dismiss();*/
         List<Device> deviceList = dbManager.getDevicesByUserId(userId);
         RecyclerView.Adapter deviceAdapter = new DeviceAdapter(deviceList, contextRef.get());
         recyclerView.setAdapter(deviceAdapter);

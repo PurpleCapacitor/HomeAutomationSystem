@@ -2,6 +2,7 @@ package com.has.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -149,12 +150,25 @@ public class DatabaseManager {
         return device;
     }
 
-    public int updateDevice(Long id, String name, String description) {
-        db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_NAME, name);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        return db.update(DatabaseHelper.TABLE_DEVICES, values, DatabaseHelper.CN_ID + " = " + id, null);
+    public void updateDevice(Long id, String name, String description, Long versionTimestamp, Long userId) {
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.updateDevice(id, name, description, versionTimestamp, userId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.CN_NAME, name);
+                values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+                db.update(DatabaseHelper.TABLE_DEVICES, values, DatabaseHelper.CN_ID + " = " + id, null);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
     }
 
     public int updateDeviceAndroid(Device device) {
@@ -169,10 +183,25 @@ public class DatabaseManager {
     public void deleteDevice(Long id) {
         //TODO kad se brise, brisi sve vezane aktuatore i senzore pa onda u tim aktuatorima brises njihove akcije i brises pravila
         //vezana za te aktuatore i za senzore
-        db = dbHelper.getWritableDatabase();
-        String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = { String.valueOf(id) };
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.deleteDevice(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                String selection = DatabaseHelper.CN_ID + " LIKE ?";
+                String[] args = { String.valueOf(id) };
                 db.delete(DatabaseHelper.TABLE_DEVICES, selection, args);
+                String deleteQuery = "delete from " + DatabaseHelper.TABLE_USERS_DEVICES + " where " +
+                        DatabaseHelper.CN_DEVICE_ID + " = " + id;
+                db.execSQL(deleteQuery);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
     }
 
     // actuators

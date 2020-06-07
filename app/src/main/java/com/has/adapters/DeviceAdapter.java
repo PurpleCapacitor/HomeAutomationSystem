@@ -75,6 +75,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                         Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
                         break;
                     case R.id.delete:
+                        databaseManager = new DatabaseManager(context);
                         databaseManager.deleteDevice(device.getId());
                         Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
                         break;

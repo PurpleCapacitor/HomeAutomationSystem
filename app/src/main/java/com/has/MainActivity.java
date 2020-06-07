@@ -1,8 +1,10 @@
 package com.has;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,22 +44,18 @@ public class MainActivity extends BaseDrawerActivity {
 
         drawer.addView(contentView, 0);
         navigationView.setCheckedItem(R.id.nav_activity1);
-        this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
-        DatabaseManager dbManager = new DatabaseManager(getApplicationContext());
-        Device d = new Device(1L, "Klima", "dada", System.currentTimeMillis());
-        dbManager.addDeviceAndroid(d,  1L);
 
+        //this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
         RecyclerView deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         deviceRecyclerView.setLayoutManager(layoutManager);
 
-        Intent intent = getIntent();
-        currentUserId = intent.getLongExtra("currentUser", -1L);
+        SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
+        currentUserId = sharedPreferences.getLong("currentUser", 0);
 
         new PopulateDevices(this, deviceRecyclerView).execute(currentUserId);
         RecyclerView.Adapter deviceAdapter = new DeviceAdapter(deviceList, this);
         deviceRecyclerView.setAdapter(deviceAdapter);
-
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
         addButton.setOnClickListener(v -> openAddNewDeviceDialog());
@@ -70,14 +68,16 @@ public class MainActivity extends BaseDrawerActivity {
         EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
         builder.setView(view)
-            .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
-            .setPositiveButton(getResources().getString(R.string.button_add), null);
+                .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {
+                })
+                .setPositiveButton(getResources().getString(R.string.button_add), null);
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0) {
+                dbManager = new DatabaseManager(getApplicationContext());
                 dbManager.addDevice(deviceName, deviceDesc, currentUserId, System.currentTimeMillis());
                 dialog.dismiss();
             } else {
@@ -86,22 +86,4 @@ public class MainActivity extends BaseDrawerActivity {
         });
     }
 
-    private static class ConnectionTest extends AsyncTask<Void, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            return MainActivity.hostAvailable();
-        }
-    }
-
-
-    public static boolean hostAvailable() {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("http://localhost", 8080), 2000);
-            return true;
-        } catch (IOException e) {
-            Log.d("Connection FAILED", e.getMessage());
-            return false;
-        }
-    }
 }

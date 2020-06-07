@@ -2,6 +2,7 @@ package com.has.user;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,7 +64,10 @@ public class LoginActivity extends AppCompatActivity {
                         if(response.code() == 200) {
                             Log.d("Connection to server", "200");
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.putExtra("currentUser", response.body());
+                            SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putLong("currentUser", response.body());
+                            editor.apply();
                             startActivity(intent);
                         } else {
                             Log.d("Login credentials", "failed");
