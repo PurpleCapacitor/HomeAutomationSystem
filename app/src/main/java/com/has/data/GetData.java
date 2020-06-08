@@ -1,5 +1,6 @@
 package com.has.data;
 
+import com.has.model.Action;
 import com.has.model.Actuator;
 import com.has.model.Device;
 import com.has.model.Sensor;
@@ -54,6 +55,9 @@ public interface GetData {
 
     //ACTUATORS
 
+    @GET("actuators/devices/{id}")
+    Call<List<Actuator>> getActuatorsByDeviceId(@Path("id") Long id);
+
     @GET("actuators")
     Call<Device> getActuators();
 
@@ -61,25 +65,27 @@ public interface GetData {
     Call<Actuator> getActuator(@Path("id") String id);
 
     @DELETE("actuators/{id}")
-    Call<Actuator> deleteActuator(@Path("id") String id);
+    Call<Void> deleteActuator(@Path("id") Long id);
 
     @POST("actuators")
     @FormUrlEncoded
-    Call<Void> createActuator(@Field("id") Long id,
-                            @Field("reference") String reference,
-                            @Field("description") String description,
-                            @Field("value") String value,
-                            @Field("deviceId") Long deviceId);
+    Call<Long> createActuator(@Field("reference") String reference,
+                              @Field("description") String description,
+                              @Field("value") String value,
+                              @Field("deviceId") Long deviceId,
+                              @Field("versionTimestamp") Long versionTimestamp);
 
     @PUT("actuators/{id}")
     @FormUrlEncoded
-    Call<Void> updateActuator(@Field("reference") String reference,
+    Call<Void> updateActuator(@Path("id") Long id,
+                              @Field("reference") String reference,
                               @Field("description") String description,
                               @Field("value") String value,
-                              @Field("deviceId") Long deviceId);
-
-
+                              @Field("deviceId") Long deviceId,
+                              @Field("versionTimestamp") Long versionTimestamp);
     //SENSORS
+    @GET("sensors/devices/{id}")
+    Call<List<Sensor>> getSensorsByDeviceId(@Path("id") Long id);
 
     @GET("sensors")
     Call<Sensor> getSensors();
@@ -88,22 +94,22 @@ public interface GetData {
     Call<Sensor> getSensor(@Path("id") String id);
 
     @DELETE("sensors/{id}")
-    Call<Sensor> deleteSensor(@Path("id") String id);
+    Call<Void> deleteSensor(@Path("id") Long id);
 
     @POST("sensors")
     @FormUrlEncoded
-    Call<Void> createSensor(@Field("id") Long id,
-                              @Field("reference") String reference,
-                              @Field("description") String description,
-                              @Field("value") String value,
+    Call<Long> createSensor(@Field("reference") String reference,
+                            @Field("description") String description,
+                            @Field("value") String value,
                             @Field("timestamp") Long timestamp,
                             @Field("deviceId") Long deviceId);
 
     @PUT("sensors/{id}")
     @FormUrlEncoded
-    Call<Void> updateSensor(@Field("reference") String reference,
-                              @Field("description") String description,
-                              @Field("value") String value,
+    Call<Void> updateSensor(@Path("id") Long id,
+                            @Field("reference") String reference,
+                            @Field("description") String description,
+                            @Field("value") String value,
                             @Field("timestamp") Long timestamp,
                             @Field("deviceId") Long deviceId);
 
@@ -119,4 +125,5 @@ public interface GetData {
                         @Field("password") String password,
                         @Field("firstName") String firstName,
                         @Field("lastName") String lastName);
+
 }

@@ -7,6 +7,15 @@ public class Actuator {
     private String description;
     private Device device;
     private String value;
+    private Long versionTimestamp;
+
+    public Long getVersionTimestamp() {
+        return versionTimestamp;
+    }
+
+    public void setVersionTimestamp(Long versionTimestamp) {
+        this.versionTimestamp = versionTimestamp;
+    }
 
     public Long getId() {
         return id;

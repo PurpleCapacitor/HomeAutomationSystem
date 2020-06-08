@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.has.async.ActuatorSync;
+import com.has.async.DeviceSync;
+import com.has.async.SensorSync;
 import com.has.model.Action;
 import com.has.model.Actuator;
 import com.has.model.Device;
@@ -14,8 +18,10 @@ import com.has.model.Rule;
 import com.has.model.Sensor;
 import com.has.model.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,28 +40,20 @@ public class DatabaseManager {
 
     public void addDevice(String name, String description, Long loggedUserId, Long versionTimestamp) {
         //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
-        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-        apiService.createDevice(name, description, loggedUserId, versionTimestamp)
-                .enqueue(new Callback<Long>() {
-                    @Override
-                    public void onResponse(Call<Long> call, Response<Long> response) {
-                        response.body();
-                        db = dbHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put(DatabaseHelper.CN_ID, response.body());
-                        values.put(DatabaseHelper.CN_NAME, name);
-                        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-                        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
-                        db.insert(DatabaseHelper.TABLE_DEVICES, null, values); //row id
-                        connectDevicesAndUsers(response.body(), loggedUserId);
-                    }
-
-                    @Override
-                    public void onFailure(Call<Long> call, Throwable t) {
-
-                    }
-
-                });
+        String[] params = { name, description, loggedUserId.toString(), versionTimestamp.toString() };
+        AsyncTask<String, Void, Long> id = new DeviceSync().execute(params);
+        try {
+            db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CN_ID, id.get());
+            values.put(DatabaseHelper.CN_NAME, name);
+            values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+            db.insert(DatabaseHelper.TABLE_DEVICES, null, values);
+            connectDevicesAndUsers(id.get(), loggedUserId);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addDeviceAndroid(Device device, Long loggedUserId) {
@@ -111,14 +109,13 @@ public class DatabaseManager {
     }
 
 
-
     public Device getDevice(Long id) {
         Device device = new Device();
         String selectQuery = "select * from " + DatabaseHelper.TABLE_DEVICES + " where " + DatabaseHelper.CN_ID + " = " + id;
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -137,7 +134,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -174,6 +171,7 @@ public class DatabaseManager {
     public int updateDeviceAndroid(Device device) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_ID, device.getId());
         values.put(DatabaseHelper.CN_NAME, device.getName());
         values.put(DatabaseHelper.CN_DESCRIPTION, device.getDescription());
         values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, device.getVersionTimestamp());
@@ -189,7 +187,7 @@ public class DatabaseManager {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 db = dbHelper.getWritableDatabase();
                 String selection = DatabaseHelper.CN_ID + " LIKE ?";
-                String[] args = { String.valueOf(id) };
+                String[] args = {String.valueOf(id)};
                 db.delete(DatabaseHelper.TABLE_DEVICES, selection, args);
                 String deleteQuery = "delete from " + DatabaseHelper.TABLE_USERS_DEVICES + " where " +
                         DatabaseHelper.CN_DEVICE_ID + " = " + id;
@@ -206,14 +204,35 @@ public class DatabaseManager {
 
     // actuators
 
-    public long addActuator(String reference, String description, Long deviceId, String value) {
+    public void addActuator(String reference, String description, Long deviceId, String value,
+                            Long versionTimestamp) {
+        String[] params = { reference, description, value, deviceId.toString(), versionTimestamp.toString() };
+        AsyncTask<String, Void, Long> id = new ActuatorSync().execute(params);
+        try {
+            db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CN_ID, id.get());
+            values.put(DatabaseHelper.CN_REFERENCE, reference);
+            values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
+            values.put(DatabaseHelper.CN_VALUE, value);
+            values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+            db.insert(DatabaseHelper.TABLE_ACTUATORS, null, values);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addActuatorAndroid(Actuator actuator) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_REFERENCE, reference);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
-        values.put(DatabaseHelper.CN_VALUE, value);
-        return db.insert(DatabaseHelper.TABLE_ACTUATORS, null, values);
+        values.put(DatabaseHelper.CN_ID, actuator.getId());
+        values.put(DatabaseHelper.CN_REFERENCE, actuator.getReference());
+        values.put(DatabaseHelper.CN_DESCRIPTION, actuator.getDescription());
+        values.put(DatabaseHelper.CN_DEVICE_ID, actuator.getDevice().getId());
+        values.put(DatabaseHelper.CN_VALUE, actuator.getValue());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, actuator.getVersionTimestamp());
+        db.insert(DatabaseHelper.TABLE_ACTUATORS, null, values);
     }
 
     public Actuator getActuator(Long id) {
@@ -222,7 +241,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -245,7 +264,7 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Actuator actuator = new Actuator();
                 actuator.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
@@ -270,13 +289,14 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Actuator actuator = new Actuator();
                 actuator.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
                 actuator.setReference(c.getString(c.getColumnIndex(DatabaseHelper.CN_REFERENCE)));
                 actuator.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
                 actuator.setValue(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE)));
+                actuator.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
                 Device d = getDevice(c.getLong(c.getColumnIndex(DatabaseHelper.CN_DEVICE_ID)));
                 actuator.setDevice(d);
                 actuators.add(actuator);
@@ -286,34 +306,94 @@ public class DatabaseManager {
         return actuators;
     }
 
-    public int updateActuator(Long id, String reference, String description, Long deviceId, String value) {
+    public void updateActuator(Long id, String reference, String description, Long deviceId, String value,
+                               Long versionTimestamp) {
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.updateActuator(id, reference, description, value, deviceId, versionTimestamp).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.CN_REFERENCE, reference);
+                values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
+                values.put(DatabaseHelper.CN_VALUE, value);
+                values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+                db.update(DatabaseHelper.TABLE_ACTUATORS, values, DatabaseHelper.CN_ID + " = " + id, null);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public void updateActuatorAndroid(Actuator actuator) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_REFERENCE, reference);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
-        values.put(DatabaseHelper.CN_VALUE, value);
-        return db.update(DatabaseHelper.TABLE_ACTUATORS, values, DatabaseHelper.CN_ID + " = " + id, null);
+        values.put(DatabaseHelper.CN_ID, actuator.getId());
+        values.put(DatabaseHelper.CN_REFERENCE, actuator.getReference());
+        values.put(DatabaseHelper.CN_DESCRIPTION, actuator.getDescription());
+        values.put(DatabaseHelper.CN_DEVICE_ID, actuator.getDevice().getId());
+        values.put(DatabaseHelper.CN_VALUE, actuator.getValue());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, actuator.getVersionTimestamp());
+        db.update(DatabaseHelper.TABLE_ACTUATORS, values, DatabaseHelper.CN_ID + " = "
+                + actuator.getId(), null);
     }
 
     public void deleteActuator(Long id) {
-        db = dbHelper.getWritableDatabase();
-        String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = { String.valueOf(id) };
-        db.delete(DatabaseHelper.TABLE_ACTUATORS, selection, args);
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.deleteActuator(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                String selection = DatabaseHelper.CN_ID + " LIKE ?";
+                String[] args = {String.valueOf(id)};
+                db.delete(DatabaseHelper.TABLE_ACTUATORS, selection, args);
+                //TODO i za sva pravila i akcije da brises
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
     }
 
     // sensors
 
-    public long addSensor(String reference, String description, Long deviceId, String value, Long timestamp) {
+    public void addSensor(String reference, String description, Long deviceId, String value, Long timestamp) {
+        String[] params = { reference, description, value, timestamp.toString(), deviceId.toString() };
+        AsyncTask<String, Void, Long> id = new SensorSync().execute(params);
+        try {
+            db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CN_ID, id.get());
+            values.put(DatabaseHelper.CN_REFERENCE, reference);
+            values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
+            values.put(DatabaseHelper.CN_VALUE, value);
+            values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
+            db.insert(DatabaseHelper.TABLE_SENSORS, null, values);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addSensorAndroid(Sensor sensor) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_REFERENCE, reference);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
-        values.put(DatabaseHelper.CN_VALUE, value);
-        values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
-        return db.insert(DatabaseHelper.TABLE_SENSORS, null, values);
+        values.put(DatabaseHelper.CN_ID, sensor.getId());
+        values.put(DatabaseHelper.CN_REFERENCE, sensor.getReference());
+        values.put(DatabaseHelper.CN_DESCRIPTION, sensor.getDescription());
+        values.put(DatabaseHelper.CN_DEVICE_ID, sensor.getDevice().getId());
+        values.put(DatabaseHelper.CN_VALUE, sensor.getValue());
+        values.put(DatabaseHelper.CN_TIMESTAMP, sensor.getTimestamp());
+        db.insert(DatabaseHelper.TABLE_SENSORS, null, values);
+
     }
 
     public Sensor getSensor(Long id) {
@@ -322,7 +402,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -346,7 +426,7 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Sensor sensor = new Sensor();
                 sensor.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
@@ -372,7 +452,7 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Sensor sensor = new Sensor();
                 sensor.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
@@ -389,22 +469,56 @@ public class DatabaseManager {
         return sensors;
     }
 
-    public int updateSensor(Long id, String reference, String description, Long deviceId, String value, Long timestamp) {
+    public void updateSensor(Long id, String reference, String description, Long deviceId, String value, Long timestamp) {
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.updateSensor(id, reference, description, value, timestamp, deviceId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.CN_REFERENCE, reference);
+                values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
+                values.put(DatabaseHelper.CN_VALUE, value);
+                values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
+                db.update(DatabaseHelper.TABLE_SENSORS, values, DatabaseHelper.CN_ID + " = " + id, null);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void updateSensorAndroid(Sensor sensor) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_REFERENCE, reference);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
-        values.put(DatabaseHelper.CN_VALUE, value);
-        values.put(DatabaseHelper.CN_TIMESTAMP, timestamp);
-        return db.update(DatabaseHelper.TABLE_SENSORS, values, DatabaseHelper.CN_ID + " = " + id, null);
+        values.put(DatabaseHelper.CN_ID, sensor.getId());
+        values.put(DatabaseHelper.CN_REFERENCE, sensor.getReference());
+        values.put(DatabaseHelper.CN_DESCRIPTION, sensor.getDescription());
+        values.put(DatabaseHelper.CN_DEVICE_ID, sensor.getDevice().getId());
+        values.put(DatabaseHelper.CN_VALUE, sensor.getValue());
+        values.put(DatabaseHelper.CN_TIMESTAMP, sensor.getTimestamp());
+        db.update(DatabaseHelper.TABLE_SENSORS, values, DatabaseHelper.CN_ID + " = " + sensor.getId(), null);
     }
 
     public void deleteSensor(Long id) {
-        db = dbHelper.getWritableDatabase();
-        String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = { String.valueOf(id) };
-        db.delete(DatabaseHelper.TABLE_SENSORS, selection, args);
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.deleteSensor(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                String selection = DatabaseHelper.CN_ID + " LIKE ?";
+                String[] args = {String.valueOf(id)};
+                db.delete(DatabaseHelper.TABLE_SENSORS,selection,args);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 
     // actions
@@ -425,7 +539,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -437,7 +551,8 @@ public class DatabaseManager {
         Actuator a = getActuator(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ACTUATOR_ID)));
         action.setActuator(a);
         c.close();
-        return action;    }
+        return action;
+    }
 
     public List<Action> getAllActions() {
         List<Action> actions = new ArrayList<>();
@@ -447,7 +562,7 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Action action = new Action();
                 action.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
@@ -472,7 +587,7 @@ public class DatabaseManager {
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if(c.moveToFirst()) {
+        if (c.moveToFirst()) {
             do {
                 Action action = new Action();
                 action.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
@@ -501,11 +616,11 @@ public class DatabaseManager {
     public void deleteAction(Long id) {
         db = dbHelper.getWritableDatabase();
         String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = { String.valueOf(id) };
+        String[] args = {String.valueOf(id)};
         db.delete(DatabaseHelper.TABLE_ACTIONS, selection, args);
     }
 
-   // users and shared devices
+    // users and shared devices
 
     public User getUser(Long id) {
         User user = new User();
@@ -514,7 +629,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -587,7 +702,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -604,7 +719,7 @@ public class DatabaseManager {
         return user;
     }
 
-    public int updateUser(Long id, String email, String  password, String firstName, String lastName) { // samo za user settings
+    public int updateUser(Long id, String email, String password, String firstName, String lastName) { // samo za user settings
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_EMAIL, email);
@@ -662,7 +777,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -683,7 +798,7 @@ public class DatabaseManager {
         Log.d("DATABASE QUERY", selectQuery);
         db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        if(c == null) {
+        if (c == null) {
             return null;
         } else
             c.moveToFirst();
@@ -709,11 +824,9 @@ public class DatabaseManager {
     public void deleteRule(Long id) {
         db = dbHelper.getWritableDatabase();
         String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = { String.valueOf(id) };
+        String[] args = {String.valueOf(id)};
         db.delete(DatabaseHelper.TABLE_RULES, selection, args);
     }
-
-
 
 
 }

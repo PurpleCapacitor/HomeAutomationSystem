@@ -106,7 +106,8 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             String deviceDesc = deviceDescEditText.getText().toString();
             String value = deviceValueEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && value.length() != 0) {
-                dbManager.updateActuator(actuator.getId(), deviceName, deviceDesc, actuator.getDevice().getId(), value);
+                dbManager.updateActuator(actuator.getId(), deviceName, deviceDesc, actuator.getDevice().getId(), value,
+                        System.currentTimeMillis());
 
                 //update actuator
                 Actuator updatedActuator = actuatorList.get(position);
@@ -133,7 +134,6 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
     }
 
     public static class ActuatorViewHolder extends RecyclerView.ViewHolder {
-
         public TextView heading;
         public TextView description;
         public ImageButton popupMenu;

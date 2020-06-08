@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_ACTUATORS = "create table " + TABLE_ACTUATORS + " (" + CN_ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_REFERENCE + " TEXT NOT NULL, " + CN_VALUE +
-            " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT NOT NULL, "+
+            " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT NOT NULL, " + CN_VERSION_TIMESTAMP + " INTEGER, " +
             CN_DEVICE_ID + " INTEGER, " + "FOREIGN KEY (" + CN_DEVICE_ID + ") REFERENCES " +
             TABLE_DEVICES + " (" + CN_ID + ") );";
 
@@ -58,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_TABLE_ACTIONS = "create table " + TABLE_ACTIONS + " (" + CN_ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_ACTION + " TEXT NOT NULL, " +
-            CN_DESCRIPTION + " TEXT NOT NULL, " + CN_ACTUATOR_ID + " INTEGER, " +
+            CN_DESCRIPTION + " TEXT NOT NULL, " + CN_VERSION_TIMESTAMP + " INTEGER, " + CN_ACTUATOR_ID + " INTEGER, " +
             "FOREIGN KEY (" + CN_ACTUATOR_ID + ") REFERENCES " + TABLE_ACTUATORS + " (" + CN_ID + ") );";
 
     //znaci 3 tabele users devices i users_devices
@@ -72,8 +72,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             CN_USER_ID + " INTEGER, " + CN_DEVICE_ID + " INTEGER, " + CN_SHARED + " INTEGER);";
 
     private static final String CREATE_TABLE_RULES = "create table " + TABLE_RULES + "(" + CN_ID +
-            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT, " +
-            CN_USER_ID + " INTEGER, " +
+            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT, "
+            + CN_VERSION_TIMESTAMP + " INTEGER, " + CN_USER_ID + " INTEGER, " +
             "FOREIGN KEY (" + CN_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + CN_ID + ") );";
 
     private static final String CREATE_TABLE_RULES_ACTUATORS = "create table " + TABLE_RULES_ACTUATORS + " (" +

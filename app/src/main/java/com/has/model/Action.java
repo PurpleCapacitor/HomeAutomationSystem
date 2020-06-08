@@ -7,6 +7,7 @@ public class Action {
     private String description;
     private String action;
     private Actuator actuator;
+    private Long versionTimestamp;
 
     public Action() {
     }
@@ -17,6 +18,14 @@ public class Action {
 
     public void setActuator(Actuator actuator) {
         this.actuator = actuator;
+    }
+
+    public Long getVersionTimestamp() {
+        return versionTimestamp;
+    }
+
+    public void setVersionTimestamp(Long versionTimestamp) {
+        this.versionTimestamp = versionTimestamp;
     }
 
     public Long getId() {

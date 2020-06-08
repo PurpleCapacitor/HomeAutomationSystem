@@ -3,6 +3,7 @@ package com.has;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
+import com.has.async.PopulateActuators;
+import com.has.async.PopulateSensors;
 import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
 import com.has.model.Device;
@@ -37,6 +40,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private Device device;
     private Long currentUserId;
     private RecyclerView.Adapter sensorAdapter, actuatorAdapter;
+    private RecyclerView actuatorRecyclerView;
+    private RecyclerView sensorRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +52,6 @@ public class DeviceInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         dbManager = new DatabaseManager(getApplicationContext());
-        List<Device> devices = dbManager.getAllDevices();
-        dbManager.addActuator("Act", "bla", devices.get(0).getId(), "5");
-        dbManager.addActuator("Hex", "hjdaskjdsa", devices.get(0).getId(), "6");
-        dbManager.addSensor("Temp", "temperature", devices.get(0).getId(), "5", System.currentTimeMillis());
-        dbManager.addSensor("Humidity", "humidity", devices.get(0).getId(), "60%", System.currentTimeMillis());
 
         Intent intent = getIntent();
         device = (Device)intent.getSerializableExtra("device");
@@ -61,18 +61,19 @@ public class DeviceInfoActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
         currentUserId = sharedPreferences.getLong("currentUser", 0);
 
-        RecyclerView sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
-        populateSenors(deviceId);
-        sensorAdapter = new SensorAdapter(sensorList, this);
-        sensorRecyclerView.setAdapter(sensorAdapter);
+        sensorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_sensors);
         RecyclerView.LayoutManager sensorLayoutManager = new LinearLayoutManager(this);
         sensorRecyclerView.setLayoutManager(sensorLayoutManager);
+        new PopulateSensors(this, sensorRecyclerView).execute(deviceId);
+        sensorAdapter = new SensorAdapter(sensorList, this);
+        sensorRecyclerView.setAdapter(sensorAdapter);
 
-        RecyclerView actuatorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_actuators);
-        actuatorAdapter = new ActuatorAdapter(actuatorList, this);
-        actuatorRecyclerView.setAdapter(actuatorAdapter);
+        actuatorRecyclerView = findViewById(R.id.recycler_view_devices_info_activity_actuators);
         RecyclerView.LayoutManager actuatorLayoutManager = new LinearLayoutManager(this);
         actuatorRecyclerView.setLayoutManager(actuatorLayoutManager);
+        new PopulateActuators(this, actuatorRecyclerView).execute(deviceId);
+        actuatorAdapter = new ActuatorAdapter(actuatorList, this);
+        actuatorRecyclerView.setAdapter(actuatorAdapter);
 
         Button addSensor = findViewById(R.id.button_add_sensor);
         Button addActuator = findViewById(R.id.button_add_actuator);
@@ -162,9 +163,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
             String value = deviceValueEditText.getText().toString();
             if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
                 dbManager.addSensor(name, description, deviceId, value, System.currentTimeMillis());
+
                 //refresh sensor data
-                populateSenors(deviceId);
-                sensorAdapter.notifyDataSetChanged();
+                new PopulateSensors(this, sensorRecyclerView).execute(deviceId);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in all sensor data", Toast.LENGTH_SHORT).show();
@@ -192,10 +193,10 @@ public class DeviceInfoActivity extends AppCompatActivity {
             String description = deviceDescEditText.getText().toString();
             String value = deviceValueEditText.getText().toString();
             if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
-                dbManager.addActuator(name, description, deviceId, value);
+                dbManager.addActuator(name, description, deviceId, value, System.currentTimeMillis());
+
                 //refresh actuator data
-                populateActuators(deviceId);
-                actuatorAdapter.notifyDataSetChanged();
+                new PopulateActuators(this, actuatorRecyclerView).execute(deviceId);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in all actuator data", Toast.LENGTH_SHORT).show();
