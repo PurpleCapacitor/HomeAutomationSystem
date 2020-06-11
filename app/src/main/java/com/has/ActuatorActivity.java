@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActionAdapter;
+import com.has.async.PopulateActions;
 import com.has.data.DatabaseManager;
 import com.has.model.Action;
 
@@ -30,6 +31,7 @@ public class ActuatorActivity extends AppCompatActivity {
     private DatabaseManager dbManager;
     private RecyclerView.Adapter actionAdapter;
     private Long actuatorId;
+    private RecyclerView actionRecyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,17 +43,17 @@ public class ActuatorActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView actionRecyclerView = findViewById(R.id.recycler_view_actuator_activity);
-        Intent intent = getIntent();
-        actuatorId = intent.getLongExtra("actuatorId", -1L);
-        dbManager.addAction("imeakcije","de","act", actuatorId);
-
-        populateActions(actuatorId);
-
-        actionAdapter = new ActionAdapter(actionList, this);
-        actionRecyclerView.setAdapter(actionAdapter);
+        actionRecyclerView = findViewById(R.id.recycler_view_actuator_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         actionRecyclerView.setLayoutManager(layoutManager);
+
+        Intent intent = getIntent();
+        actuatorId = intent.getLongExtra("actuatorId", -1L);
+
+        new PopulateActions(this, actionRecyclerView).execute(actuatorId);
+        actionAdapter = new ActionAdapter(actionList, this);
+        actionRecyclerView.setAdapter(actionAdapter);
+
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
         addButton.setOnClickListener(v -> openEditActionDialog());
@@ -77,20 +79,14 @@ public class ActuatorActivity extends AppCompatActivity {
             String deviceDesc = deviceDescEditText.getText().toString();
             String devAction = deviceValueEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && devAction.length() != 0) {
-                dbManager.addAction(deviceName, deviceDesc, devAction, actuatorId);
+                dbManager.addAction(deviceName, deviceDesc, devAction, actuatorId, System.currentTimeMillis());
 
                 //update actions
-                populateActions(actuatorId);
-                actionAdapter.notifyDataSetChanged();
+                new PopulateActions(this, actionRecyclerView).execute(actuatorId);
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in all action data", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void populateActions(Long id) {
-        actionList.clear();
-        actionList.addAll(dbManager.getActionsByActuator(id));
     }
 }

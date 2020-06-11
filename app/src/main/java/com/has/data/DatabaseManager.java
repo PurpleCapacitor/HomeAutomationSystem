@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Display;
 
 import com.google.gson.Gson;
+import com.has.async.ActionSync;
 import com.has.async.ActuatorSync;
 import com.has.async.DeviceSync;
 import com.has.async.RuleSync;
@@ -528,14 +529,35 @@ public class DatabaseManager {
 
     // actions
 
-    public long addAction(String name, String description, String action, Long actuatorId) {
+    public void addAction(String name, String description, String action, Long actuatorId, Long versionTimestamp) {
+        String[] params = { name, description, action, actuatorId.toString(), versionTimestamp.toString() };
+        AsyncTask<String, Void, Long> id = new ActionSync().execute(params);
+        try {
+            db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CN_ID, id.get());
+            values.put(DatabaseHelper.CN_NAME, name);
+            values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_ACTION, action);
+            values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
+            values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+            db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addActionAndroid(Action action) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_NAME, name);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_ACTION, action);
-        values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
-        return db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
+        values.put(DatabaseHelper.CN_ID, action.getId());
+        values.put(DatabaseHelper.CN_NAME, action.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, action.getDescription());
+        values.put(DatabaseHelper.CN_ACTION, action.getAction());
+        values.put(DatabaseHelper.CN_ACTUATOR_ID, action.getActuator().getId());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, action.getVersionTimestamp());
+        db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
     }
 
     public Action getAction(Long id) {
@@ -599,6 +621,7 @@ public class DatabaseManager {
                 action.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
                 action.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
                 action.setAction(c.getString(c.getColumnIndex(DatabaseHelper.CN_ACTION)));
+                action.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
                 Actuator a = getActuator(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ACTUATOR_ID)));
                 action.setActuator(a);
                 actions.add(action);
@@ -608,21 +631,60 @@ public class DatabaseManager {
         return actions;
     }
 
-    public int updateAction(Long id, String name, String description, String action, Long actuatorId) {
+    public void updateAction(Long id, String name, String description, String action, Long actuatorId,
+                            Long versionTimestamp) {
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.updateAction(id, name, description, action, actuatorId, versionTimestamp).enqueue(
+                new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        db = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(DatabaseHelper.CN_NAME, name);
+                        values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                        values.put(DatabaseHelper.CN_ACTION, action);
+                        values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
+                        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+                        db.update(DatabaseHelper.TABLE_ACTIONS, values, DatabaseHelper.CN_ID + " = " + id, null);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
+                    }
+                }
+        );
+    }
+
+    public void updateActionAndroid(Action action) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_NAME, name);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_ACTION, action);
-        values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
-        return db.update(DatabaseHelper.TABLE_ACTIONS, values, DatabaseHelper.CN_ID + " = " + id, null);
+        values.put(DatabaseHelper.CN_ID, action.getId());
+        values.put(DatabaseHelper.CN_NAME, action.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, action.getDescription());
+        values.put(DatabaseHelper.CN_ACTION, action.getAction());
+        values.put(DatabaseHelper.CN_ACTUATOR_ID, action.getActuator().getId());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, action.getVersionTimestamp());
+        db.update(DatabaseHelper.TABLE_ACTIONS, values, DatabaseHelper.CN_ID + " = " + action.getId(), null);
     }
 
     public void deleteAction(Long id) {
-        db = dbHelper.getWritableDatabase();
-        String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = {String.valueOf(id)};
-        db.delete(DatabaseHelper.TABLE_ACTIONS, selection, args);
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.deleteAction(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                String selection = DatabaseHelper.CN_ID + " LIKE ?";
+                String[] args = {String.valueOf(id)};
+                db.delete(DatabaseHelper.TABLE_ACTIONS, selection, args);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
     }
 
     // users and shared devices

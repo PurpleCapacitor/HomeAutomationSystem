@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
 import com.has.async.PopulateActuators;
+import com.has.async.PopulateDevices;
 import com.has.async.PopulateSensors;
 import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
@@ -79,6 +80,11 @@ public class DeviceInfoActivity extends AppCompatActivity {
         Button addActuator = findViewById(R.id.button_add_actuator);
         addSensor.setOnClickListener(view -> openAddSensorDialog());
         addActuator.setOnClickListener(view -> openAddActuatorDialog());
+
+        TextView header = findViewById(R.id.text_device_name_info);
+        header.setText(device.getName());
+        TextView description = findViewById(R.id.text_device_description_info);
+        description.setText(device.getDescription());
     }
 
     private void populateActuators(Long id) {
@@ -108,7 +114,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
             dbManager = new DatabaseManager(getApplicationContext());
             dbManager.deleteDevice(deviceId);
             // return back to device list
-            finish();
+            Intent intent = new Intent(DeviceInfoActivity.this, MainActivity.class);
+            DeviceInfoActivity.this.startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -135,6 +142,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             if (deviceName.length() != 0 && deviceDesc.length() != 0) {
                 dbManager = new DatabaseManager(getApplicationContext());
                 dbManager.updateDevice(deviceId, deviceName, deviceDesc, System.currentTimeMillis(), currentUserId);
+
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();

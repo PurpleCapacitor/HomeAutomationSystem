@@ -113,7 +113,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             String deviceDesc = deviceDescEditText.getText().toString();
             String devAction = deviceValueEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && devAction.length() != 0) {
-                dbManager.updateAction(action.getId(), deviceName, deviceDesc, devAction, action.getActuator().getId());
+                dbManager.updateAction(action.getId(), deviceName, deviceDesc, devAction,
+                        action.getActuator().getId(), System.currentTimeMillis());
 
                 //update action
                 Action updatedAction = actionList.get(position);

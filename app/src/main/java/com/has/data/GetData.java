@@ -84,6 +84,7 @@ public interface GetData {
                               @Field("value") String value,
                               @Field("deviceId") Long deviceId,
                               @Field("versionTimestamp") Long versionTimestamp);
+
     //SENSORS
     @GET("sensors/devices/{id}")
     Call<List<Sensor>> getSensorsByDeviceId(@Path("id") Long id);
@@ -159,4 +160,27 @@ public interface GetData {
                         @Field("firstName") String firstName,
                         @Field("lastName") String lastName);
 
+    // actions
+    @GET("actions/actuators/{id}")
+    Call<List<Action>> getActionsByActuatorId(@Path("id") Long id);
+
+    @POST("/actions")
+    @FormUrlEncoded
+    Call<Long> createAction(@Field("name") String name,
+                            @Field("description") String description,
+                            @Field("action") String action,
+                            @Field("actuatorId") Long actuatorId,
+                            @Field("versionTimestamp") Long versionTimestamp);
+
+    @PUT("actions/{id}")
+    @FormUrlEncoded
+    Call<Void> updateAction(@Path("id") Long id,
+                            @Field("name") String name,
+                            @Field("description") String description,
+                            @Field("action") String action,
+                            @Field("actuatorId") Long actuatorId,
+                            @Field("versionTimestamp") Long versionTimestamp);
+
+    @DELETE("actions/{id}")
+    Call<Void> deleteAction(@Path("id") Long id);
 }
