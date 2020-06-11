@@ -8,8 +8,18 @@ public class Rule {
     private Sensor sensor;
     private Actuator actuator;
     private User user;
+    private Long versionTimestamp;
+
 
     public Rule() {
+    }
+
+    public Long getVersionTimestamp() {
+        return versionTimestamp;
+    }
+
+    public void setVersionTimestamp(Long versionTimestamp) {
+        this.versionTimestamp = versionTimestamp;
     }
 
     public Sensor getSensor() {

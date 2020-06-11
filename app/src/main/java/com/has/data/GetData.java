@@ -3,6 +3,7 @@ package com.has.data;
 import com.has.model.Action;
 import com.has.model.Actuator;
 import com.has.model.Device;
+import com.has.model.Rule;
 import com.has.model.Sensor;
 import com.has.model.User;
 
@@ -113,11 +114,43 @@ public interface GetData {
                             @Field("timestamp") Long timestamp,
                             @Field("deviceId") Long deviceId);
 
+    //RULES
+    @GET("rules/user/{id}")
+    Call<List<Rule>> getRulesByUserId(@Path("id") Long id);
+
+    @GET("rules")
+    Call<Rule> getRules();
+
+    @GET("rules/{id}")
+    Call<Rule> getRule(@Path("id") String id);
+
+    @DELETE("rules/{id}")
+    Call<Void> deleteRule(@Path("id") Long id);
+
+    @POST("rules")
+    @FormUrlEncoded
+    Call<Long> createRule(@Field("name") String name,
+                            @Field("description") String description,
+                            @Field("versionTimestamp") Long versionTimestamp,
+                            @Field("userId") Long userId,
+                          @Field("sensorId") Long sensorId,
+                          @Field("actuatorId") Long actuatorId);
+
+    @PUT("rules/{id}")
+    @FormUrlEncoded
+    Call<Void> updateRule(@Path("id") Long id,
+                            @Field("name") String name,
+                            @Field("description") String description,
+                            @Field("versionTimestamp") Long versionTimestamp,
+                            @Field("userId") Long userId,
+                          @Field("sensorId") Long sensorId,
+                          @Field("actuatorId") Long actuatorId);
+
 
     //USER
     @POST("user/login")
     @FormUrlEncoded
-    Call<Long> login(@Field("email") String email, @Field("password") String password);
+    Call<User> login(@Field("email") String email, @Field("password") String password);
 
     @POST("user/register")
     @FormUrlEncoded

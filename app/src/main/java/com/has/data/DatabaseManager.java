@@ -7,9 +7,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Display;
 
+import com.google.gson.Gson;
 import com.has.async.ActuatorSync;
 import com.has.async.DeviceSync;
+import com.has.async.RuleSync;
 import com.has.async.SensorSync;
 import com.has.model.Action;
 import com.has.model.Actuator;
@@ -26,6 +29,8 @@ import java.util.concurrent.ExecutionException;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class DatabaseManager {
@@ -740,19 +745,54 @@ public class DatabaseManager {
         return db.insert(DatabaseHelper.TABLE_USERS, null, values);
     }
 
-    // rules
-
-    public long addRule(String name, String description, Long sensorId, Long actuatorId, Long userId) {
+    public long addUserAndroid(User user) { // samo za testiranje
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_NAME, name);
-        values.put(DatabaseHelper.CN_DESCRIPTION, description);
-        values.put(DatabaseHelper.CN_USER_ID, userId);
-        long rowId = db.insert(DatabaseHelper.TABLE_ACTIONS, null, values);
-        Rule r = getRuleByName(name);
-        connectRuleAndSensor(r.getId(), sensorId);
-        connectRuleAndActuator(r.getId(), actuatorId);
-        return rowId;
+        values.put(DatabaseHelper.CN_ID, user.getId());
+        values.put(DatabaseHelper.CN_EMAIL, user.getEmail());
+        values.put(DatabaseHelper.CN_PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.CN_FIRST_NAME, user.getFirstName());
+        values.put(DatabaseHelper.CN_LAST_NAME, user.getLastName());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, user.getVersionTimestamp());
+        return db.insert(DatabaseHelper.TABLE_USERS, null, values);
+    }
+
+    // rules
+
+    public void addRule(String name, String description, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
+        String[] params = { name, description, versionTimestamp.toString(), userId.toString(), sensorId.toString(), actuatorId.toString() };
+        AsyncTask<String, Void, Long> id = new RuleSync().execute(params);
+        try
+        {
+            db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CN_ID, id.get());
+            values.put(DatabaseHelper.CN_NAME, name);
+            values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_VERSION_TIMESTAMP,versionTimestamp);
+            values.put(DatabaseHelper.CN_USER_ID, userId);
+            db.insert(DatabaseHelper.TABLE_RULES, null, values);
+            connectRuleAndSensor(id.get(), sensorId);
+            connectRuleAndActuator(id.get(), actuatorId);
+        }catch (ExecutionException | InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addRuleAndroid(Rule device, Long loggedUserId) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_ID, device.getId());
+        values.put(DatabaseHelper.CN_NAME, device.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, device.getDescription());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, device.getVersionTimestamp());
+        values.put(DatabaseHelper.CN_USER_ID, loggedUserId);
+        db.insert(DatabaseHelper.TABLE_RULES, null, values); //row id
+        connectRuleAndActuator(device.getId(), device.getActuator().getId());
+        connectRuleAndSensor(device.getId(), device.getSensor().getId());
+
     }
 
     public long connectRuleAndSensor(Long ruleId, Long sensorId) {
@@ -771,7 +811,7 @@ public class DatabaseManager {
         return db.insert(DatabaseHelper.TABLE_RULES_ACTUATORS, null, values);
     }
 
-    public Rule getRule(Long id) {
+    public Rule getRule(Long id, Long userId) {
         Rule rule = new Rule();
         String selectQuery = "select * from " + DatabaseHelper.TABLE_RULES + " where " + DatabaseHelper.CN_ID + " = " + id;
         Log.d("DATABASE QUERY", selectQuery);
@@ -785,7 +825,9 @@ public class DatabaseManager {
         rule.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
         rule.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         rule.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
-        User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
+       // User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
+        User user = new User();
+        user.setId(userId);
         rule.setUser(user);
 
         c.close();
@@ -813,12 +855,79 @@ public class DatabaseManager {
         return rule;
     }
 
+    public List<Rule> getRulesbyUserId(Long id) {
+        List<Rule> rules = new ArrayList<>();
+        String query = "select * from " + DatabaseHelper.TABLE_RULES + " where " +
+                DatabaseHelper.CN_USER_ID + " = " + id;
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Rule d = getRule(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_ID)), id);
+                rules.add(d);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return rules;
+    }
+
+    public Actuator getActuatorByRuleId(Long id) {
+        Actuator actuator = new Actuator();
+        String query = "select * from " + DatabaseHelper.TABLE_RULES_ACTUATORS + " where " +
+                DatabaseHelper.CN_ACTUATOR_ID + " = " + id;
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Actuator d = getActuator(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_RULES_ID)));
+                actuator = d;
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return actuator;
+    }
+
+    public Sensor getSensorByRuleId(Long id) {
+        Sensor sensor = new Sensor();
+        String query = "select * from " + DatabaseHelper.TABLE_RULES_SENSORS + " where " +
+                DatabaseHelper.CN_SENSOR_ID + " = " + id;
+        Log.d("DATABASE QUERY", query);
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Sensor d = getSensor(cursor.getLong(cursor.getColumnIndex(DatabaseHelper.CN_RULES_ID)));
+                sensor = d;
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return sensor;
+    }
+
     public int updateRule(Long id, String name, String description) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_NAME, name);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
         return db.update(DatabaseHelper.TABLE_RULES, values, DatabaseHelper.CN_ID + " = " + id, null);
+    }
+
+    public int updateRuleAndroid(Rule rule) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CN_ID, rule.getId());
+        values.put(DatabaseHelper.CN_NAME, rule.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, rule.getDescription());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, rule.getVersionTimestamp());
+        return db.update(DatabaseHelper.TABLE_RULES, values, DatabaseHelper.CN_ID + " = " + rule.getId(), null);
     }
 
     public void deleteRule(Long id) {

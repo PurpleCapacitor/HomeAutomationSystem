@@ -65,4 +65,9 @@ public class Sensor {
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return reference;}
+
 }

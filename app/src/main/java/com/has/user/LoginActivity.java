@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
 import com.has.MainActivity;
 import com.has.R;
 import com.has.data.DatabaseManager;
@@ -53,15 +54,19 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
                 //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
-                apiService.login(email.getText().toString(),pass.getText().toString()).enqueue(new Callback<Long>() {
+                apiService.login(email.getText().toString(),pass.getText().toString()).enqueue(new Callback<User>() {
                     @Override
-                    public void onResponse(Call<Long> call, Response<Long> response) {
+                    public void onResponse(Call<User> call, Response<User> response) {
                         if(response.code() == 200) {
                             Log.d("Connection to server", "200");
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putLong("currentUser", response.body());
+                            editor.putLong("currentUser", response.body().getId());
+                           // dbManager.addUserAndroid(response.body());
+                            Gson gson = new Gson();
+                            String json = gson.toJson(response.body());
+                            editor.putString("user", json);
                             editor.apply();
                             startActivity(intent);
                         } else {
@@ -72,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Long> call, Throwable t) {
+                    public void onFailure(Call<User> call, Throwable t) {
                     }
                 });
             }
