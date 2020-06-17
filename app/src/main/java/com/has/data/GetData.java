@@ -54,6 +54,11 @@ public interface GetData {
                             @Field("versionTimestamp") Long versionTimestamp,
                             @Field("userId") Long userId);
 
+    @POST("devices/shared")
+    @FormUrlEncoded
+    Call<Void> shareDevice(@Field("deviceId") Long deviceId,
+                           @Field("userEmail") String userEmail);
+
     //ACTUATORS
 
     @GET("actuators/devices/{id}")
@@ -131,19 +136,19 @@ public interface GetData {
     @POST("rules")
     @FormUrlEncoded
     Call<Long> createRule(@Field("name") String name,
-                            @Field("description") String description,
-                            @Field("versionTimestamp") Long versionTimestamp,
-                            @Field("userId") Long userId,
+                          @Field("description") String description,
+                          @Field("versionTimestamp") Long versionTimestamp,
+                          @Field("userId") Long userId,
                           @Field("sensorId") Long sensorId,
                           @Field("actuatorId") Long actuatorId);
 
     @PUT("rules/{id}")
     @FormUrlEncoded
     Call<Void> updateRule(@Path("id") Long id,
-                            @Field("name") String name,
-                            @Field("description") String description,
-                            @Field("versionTimestamp") Long versionTimestamp,
-                            @Field("userId") Long userId,
+                          @Field("name") String name,
+                          @Field("description") String description,
+                          @Field("versionTimestamp") Long versionTimestamp,
+                          @Field("userId") Long userId,
                           @Field("sensorId") Long sensorId,
                           @Field("actuatorId") Long actuatorId);
 

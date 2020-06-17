@@ -2,24 +2,34 @@ package com.has.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.has.DeviceInfoActivity;
+import com.has.MainActivity;
 import com.has.R;
 import com.has.data.DatabaseManager;
+import com.has.data.GetData;
+import com.has.data.RetrofitClient;
 import com.has.model.Device;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
 
@@ -72,7 +82,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                         detailedView(device);
                         break;
                     case R.id.share:
-                        Toast.makeText(context, "share", Toast.LENGTH_LONG).show();
+                        shareDeviceDialog(context, device.getId());
                         break;
                     case R.id.delete:
                         databaseManager = new DatabaseManager(context);
@@ -98,6 +108,38 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         Intent intent = new Intent(context, DeviceInfoActivity.class);
         intent.putExtra("device", device);
         context.startActivity(intent);
+    }
+
+    private void shareDeviceDialog(Context context, Long deviceId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_share_device, null);
+        EditText userEmailText = view.findViewById(R.id.text_shared_user_email);
+        builder.setView(view)
+                .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+                .setPositiveButton(context.getResources().getString(R.string.share), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String userEmail = userEmailText.getText().toString();
+            if(userEmail.length() != 0) {
+                GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+                apiService.shareDevice(deviceId, userEmail).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
+                    }
+                });
+                dialog.dismiss();
+            } else {
+                Toast.makeText(context, "Please fill in user email", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

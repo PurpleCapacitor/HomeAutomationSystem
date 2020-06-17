@@ -32,6 +32,9 @@
     <string name="add_action">Add action</string>
     <string name="add_rule">Add rule</string>
     <string name="edit_rule">Edit rule</string>
+    <string name="share_device">Share device</string>
+    <string name="share_device_user_email">Enter user email</string>
+    <string name="title">Title</string>
 
 
     <string name="edit_action">Edit action</string>
