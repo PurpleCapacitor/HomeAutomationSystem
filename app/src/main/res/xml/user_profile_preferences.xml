@@ -21,7 +21,7 @@
             app:useSimpleSummaryProvider="true"
             app:iconSpaceReserved="false"/>
 
-        <Preference
+        <EditTextPreference
             app:key="password"
             app:title="@string/password_title"
             app:summary="Change password"

@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.has.settings.SettingsActivity;
 import com.has.settings.UserProfileActivity;
+import com.has.user.LoginActivity;
 
 public class BaseDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -48,6 +49,8 @@ public class BaseDrawerActivity extends AppCompatActivity
             startAnimatedActivity(new Intent(getApplicationContext(), RulesActivity.class));
         } else if (id == R.id.nav_activity3) {
         startAnimatedActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+        } else if(id == R.id.nav_activity5) {
+            startAnimatedActivity(new Intent(getApplicationContext(), LoginActivity.class));
         } else {
             startAnimatedActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         }

@@ -165,6 +165,12 @@ public interface GetData {
                         @Field("firstName") String firstName,
                         @Field("lastName") String lastName);
 
+    @PUT("user")
+    @FormUrlEncoded
+    Call<Void> updateUser(@Field("id") Long id,
+                          @Field("email") String email,
+                          @Field("password") String password);
+
     // actions
     @GET("actions/actuators/{id}")
     Call<List<Action>> getActionsByActuatorId(@Path("id") Long id);

@@ -42,14 +42,10 @@ public class LoginActivity extends AppCompatActivity {
 
         User user = new User(1L, "da@da", "da", "da", "da", null,
                                     System.currentTimeMillis());
-        /*dbManager.addUser("da@da", "da", "da", "da", System.currentTimeMillis());
-        dbManager.addDevice("Klima", "Description 1", user, System.currentTimeMillis());*/
 
         signIn.setOnClickListener(new View.OnClickListener() {
             EditText email = findViewById(R.id.text_enterEmail);
             EditText pass = findViewById(R.id.text_enterPassword);
-
-
             @Override
             public void onClick(View v) {
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
@@ -63,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
                             SharedPreferences sharedPreferences = getSharedPreferences("currentUser", 0);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putLong("currentUser", response.body().getId());
-                           // dbManager.addUserAndroid(response.body());
                             Gson gson = new Gson();
                             String json = gson.toJson(response.body());
                             editor.putString("user", json);

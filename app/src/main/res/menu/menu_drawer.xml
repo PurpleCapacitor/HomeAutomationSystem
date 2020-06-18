@@ -12,6 +12,9 @@
         <item
             android:id="@+id/nav_activity4"
             android:title="@string/settings" />
+        <item
+            android:id="@+id/nav_activity5"
+            android:title="@string/logout" />
     </group>
 
 </menu>

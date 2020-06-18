@@ -14,6 +14,10 @@
     <string name="actuators">Actuators</string>
     <string name="activeRules">Active rules</string>
     <string name="title_activity_user_profile">Profile</string>
+    <string name="enter_new_email">Enter new email</string>
+    <string name="enter_new_password">Enter new password</string>
+    <string name="enter_old_password">Enter old password</string>
+    <string name="change">Change</string>
 
     <!-- Add Device-->
     <string name="device_action">Value</string>
@@ -76,6 +80,9 @@
     <string name="theme_title">Theme</string>
     <string name="light_theme_label">Light</string>
     <string name="dark_theme_label">Dark</string>
+    <string name="change_personal_information">Change personal information</string>
+    <string name="logout">Log out</string>
+
 
     <string-array name="devices_array">
         <item>Sensor</item>
