@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
 import com.has.async.PopulateActuators;
@@ -28,6 +29,7 @@ import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
 import com.has.model.Device;
 import com.has.model.Sensor;
+import com.has.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private RecyclerView.Adapter sensorAdapter, actuatorAdapter;
     private RecyclerView actuatorRecyclerView;
     private RecyclerView sensorRecyclerView;
+    private TextView header, description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +54,15 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbManager = new DatabaseManager(getApplicationContext());
 
-        Intent intent = getIntent();
-        device = (Device)intent.getSerializableExtra("device");
+        SharedPreferences devicePref = getSharedPreferences("device", 0);
+        Gson gson = new Gson();
+        String deviceJson = devicePref.getString("device", "");
+        device = gson.fromJson(deviceJson, Device.class);
         deviceId = device.getId();
         populateActuators(deviceId);
 
@@ -81,9 +88,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
         addSensor.setOnClickListener(view -> openAddSensorDialog());
         addActuator.setOnClickListener(view -> openAddActuatorDialog());
 
-        TextView header = findViewById(R.id.text_device_name_info);
+        header = findViewById(R.id.text_device_name_info);
         header.setText(device.getName());
-        TextView description = findViewById(R.id.text_device_description_info);
+        description = findViewById(R.id.text_device_description_info);
         description.setText(device.getDescription());
     }
 
@@ -116,6 +123,10 @@ public class DeviceInfoActivity extends AppCompatActivity {
             // return back to device list
             Intent intent = new Intent(DeviceInfoActivity.this, MainActivity.class);
             DeviceInfoActivity.this.startActivity(intent);
+        } else {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -142,7 +153,18 @@ public class DeviceInfoActivity extends AppCompatActivity {
             if (deviceName.length() != 0 && deviceDesc.length() != 0) {
                 dbManager = new DatabaseManager(getApplicationContext());
                 dbManager.updateDevice(deviceId, deviceName, deviceDesc, System.currentTimeMillis(), currentUserId);
-
+                header.setText(deviceName);
+                description.setText(deviceDesc);
+                //for multiple edits
+                device.setName(deviceName);
+                device.setDescription(deviceDesc);
+                // instant updates for header and description
+                SharedPreferences sharedPreferences = getSharedPreferences("device", 0);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(device);
+                editor.putString("device", json);
+                editor.apply();
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();

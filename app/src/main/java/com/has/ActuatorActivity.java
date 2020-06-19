@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,7 +30,6 @@ public class ActuatorActivity extends AppCompatActivity {
 
     private List<Action> actionList = new ArrayList<>();
     private DatabaseManager dbManager;
-    private RecyclerView.Adapter actionAdapter;
     private Long actuatorId;
     private RecyclerView actionRecyclerView;
 
@@ -42,6 +42,8 @@ public class ActuatorActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         actionRecyclerView = findViewById(R.id.recycler_view_actuator_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -49,14 +51,21 @@ public class ActuatorActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         actuatorId = intent.getLongExtra("actuatorId", -1L);
+        String actuatorName = intent.getStringExtra("actuatorName");
+        String actuatorDesc = intent.getStringExtra("actuatorDesc");
 
         new PopulateActions(this, actionRecyclerView).execute(actuatorId);
-        actionAdapter = new ActionAdapter(actionList, this);
+        RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
         actionRecyclerView.setAdapter(actionAdapter);
 
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
         addButton.setOnClickListener(v -> openEditActionDialog());
+
+        TextView header = findViewById(R.id.text_component_name_info);
+        header.setText(actuatorName);
+        TextView description = findViewById(R.id.text_component_description_info);
+        description.setText(actuatorDesc);
 
     }
 
@@ -75,11 +84,11 @@ public class ActuatorActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String deviceName = deviceNameEditText.getText().toString();
-            String deviceDesc = deviceDescEditText.getText().toString();
-            String devAction = deviceValueEditText.getText().toString();
-            if (deviceName.length() != 0 && deviceDesc.length() != 0 && devAction.length() != 0) {
-                dbManager.addAction(deviceName, deviceDesc, devAction, actuatorId, System.currentTimeMillis());
+            String actionName = deviceNameEditText.getText().toString();
+            String actionDesc = deviceDescEditText.getText().toString();
+            String actionAction = deviceValueEditText.getText().toString();
+            if (actionName.length() != 0 && actionDesc.length() != 0 && actionAction.length() != 0) {
+                dbManager.addAction(actionName, actionDesc, actionAction, actuatorId, System.currentTimeMillis());
 
                 //update actions
                 new PopulateActions(this, actionRecyclerView).execute(actuatorId);
@@ -88,5 +97,13 @@ public class ActuatorActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Please fill in all action data", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent(getApplicationContext(), DeviceInfoActivity.class);
+        startActivity(intent);
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

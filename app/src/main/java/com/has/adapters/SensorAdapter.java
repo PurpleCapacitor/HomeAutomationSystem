@@ -76,7 +76,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                               additionalInfo();
+                               additionalInfo(sensor);
                                 break;
                             case R.id.edit:
                                 openEditSensorDialog(sensor, position);
@@ -134,8 +134,10 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         });
     }
 
-    private void additionalInfo() {
+    private void additionalInfo(Sensor sensor) {
         Intent intent = new Intent(context, SensorActivity.class);
+        intent.putExtra("sensorName", sensor.getReference());
+        intent.putExtra("sensorDesc", sensor.getDescription());
         context.startActivity(intent);
     }
 

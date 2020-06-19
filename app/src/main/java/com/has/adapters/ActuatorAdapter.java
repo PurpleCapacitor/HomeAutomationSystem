@@ -62,7 +62,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
-                                additionalInfo(actuator.getId());
+                                additionalInfo(actuator);
                                 break;
                             case R.id.edit:
                                 openEditActuatorDialog(actuator, position);
@@ -122,9 +122,11 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
         });
     }
 
-    private void additionalInfo(Long id) {
+    private void additionalInfo(Actuator actuator) {
         Intent intent = new Intent(context, ActuatorActivity.class);
-        intent.putExtra("actuatorId", id);
+        intent.putExtra("actuatorId", actuator.getId());
+        intent.putExtra("actuatorName", actuator.getReference());
+        intent.putExtra("actuatorDesc", actuator.getDescription());
         context.startActivity(intent);
     }
 

@@ -40,8 +40,6 @@ public class MainActivity extends BaseDrawerActivity {
 
         drawer.addView(contentView, 0);
         navigationView.setCheckedItem(R.id.nav_activity1);
-
-        //this.deleteDatabase("HomeAutomation.db"); //TODO za testiranje
         deviceRecyclerView = findViewById(R.id.recycler_view_devices_main_activity);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         deviceRecyclerView.setLayoutManager(layoutManager);

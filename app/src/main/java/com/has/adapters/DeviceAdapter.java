@@ -2,6 +2,7 @@ package com.has.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.has.DeviceInfoActivity;
 import com.has.MainActivity;
 import com.has.R;
@@ -79,7 +81,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.see_more:
-                        detailedView(device);
+                        detailedView(device, context);
                         break;
                     case R.id.share:
                         shareDeviceDialog(context, device.getId());
@@ -104,9 +106,15 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         return deviceList.size();
     }
 
-    private void detailedView(Device device) {
+    private void detailedView(Device device, Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("device", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(device);
+        editor.putString("device", json);
+        editor.apply();
+
         Intent intent = new Intent(context, DeviceInfoActivity.class);
-        intent.putExtra("device", device);
         context.startActivity(intent);
     }
 

@@ -758,7 +758,7 @@ public class DatabaseManager {
         values.put(DatabaseHelper.CN_DEVICE_ID, deviceId);
         values.put(DatabaseHelper.CN_SHARED, 0);
         return db.insert(DatabaseHelper.TABLE_USERS_DEVICES, null, values);
-    } //TODO treba omuguciti za shared da moze da stavi
+    }
 
 
     public User getUserByEmail(String email) {
