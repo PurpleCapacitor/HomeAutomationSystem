@@ -1,4 +1,6 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
     <string name="app_name">Home Automation System</string>
     <string name="signIn">Sign In</string>
     <string name="register">Register</string>
@@ -82,6 +84,19 @@
     <string name="dark_theme_label">Dark</string>
     <string name="change_personal_information">Change personal information</string>
     <string name="logout">Log out</string>
+
+    <!-- messages -->
+    <string name="deleted">Deleted</string>
+    <string name="fill_device_data">Please fill in device data</string>
+    <string name="fill_sensor_data">Please fill in all sensor data</string>
+    <string name="fill_actuator_data">Please fill in all actuator data</string>
+    <string name="fill_rule_data">Please fill in rule data</string>
+    <string name="fill_action_data">Please fill in all action data</string>
+    <string name="login_unsuccessful">Login unsuccessful</string>
+    <string name="fill_user_email">Please fill in user email</string>
+    <string name="fill_email_pass">Please fill in email or password fields</string>
+    <string name="fill_wrong_pass">Wrong password</string>
+    <string name="btn_change_language">Change language</string>
 
 
     <string-array name="devices_array">

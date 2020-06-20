@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {
                             Log.d("Login credentials", "failed");
-                            Toast.makeText(LoginActivity.this, "Login unsuccessful", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, R.string.login_unsuccessful, Toast.LENGTH_LONG).show();
                         }
 
                     }

@@ -65,8 +65,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 1, "Edit");
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 2, "Delete");
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 1, R.string.edit);
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 2, R.string.delete);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -78,7 +78,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                                 dbManager.deleteAction(action.getId());
                                 actionList.remove(position);
                                 notifyItemRemoved(position);
-                                Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, R.string.deleted, Toast.LENGTH_LONG).show();
                                 break;
                         }
                         return false;
@@ -124,7 +124,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 notifyItemChanged(position);
                 dialog.dismiss();
             } else {
-                Toast.makeText(context.getApplicationContext(), "Please fill in all action data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), R.string.fill_action_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

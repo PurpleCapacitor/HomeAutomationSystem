@@ -181,7 +181,7 @@ public class RulesActivity extends BaseDrawerActivity {
                 new PopulateRules(this, ruleRecyclerView).execute(currentUserId);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in rule data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_rule_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

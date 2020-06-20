@@ -94,7 +94,7 @@ public class ActuatorActivity extends AppCompatActivity {
                 new PopulateActions(this, actionRecyclerView).execute(actuatorId);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in all action data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_action_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

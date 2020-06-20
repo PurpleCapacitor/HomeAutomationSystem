@@ -51,26 +51,24 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.getMenu().add(Menu.NONE, R.id.add_sensor_and_actuator, 1, "Add sensor and actuator");
-                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, "Edit");
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
+                popupMenu.getMenu().add(Menu.NONE, R.id.add_sensor_and_actuator, 1, R.string.add_sensor_and_actuator);
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, R.string.edit);
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, R.string.delete);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.add_sensor_and_actuator:
-                                Toast.makeText(context, "Add sensor and actuator", Toast.LENGTH_LONG).show();
                                 break;
                             case R.id.edit:
                                 openEditActuatorDialog(rule, position);
-                                Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
                                 break;
                             case R.id.delete:
                                 databaseManager = new DatabaseManager(context);
                                 databaseManager.deleteDevice(rule.getId());
                                 ruleList.remove(position);
                                 notifyItemRemoved(position);
-                                Toast.makeText(context, "Delete", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, R.string.deleted, Toast.LENGTH_LONG).show();
                                 break;
                         }
                         return false;
@@ -133,7 +131,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
                 notifyItemChanged(position);
                 dialog.dismiss();
             } else {
-                Toast.makeText(context.getApplicationContext(), "Please fill in actuator data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), R.string.fill_actuator_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

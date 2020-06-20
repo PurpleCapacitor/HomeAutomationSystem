@@ -167,7 +167,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 editor.apply();
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_device_data, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -198,7 +198,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 new PopulateSensors(this, sensorRecyclerView).execute(deviceId);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in all sensor data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_sensor_data, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -229,7 +229,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 new PopulateActuators(this, actuatorRecyclerView).execute(deviceId);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in all actuator data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_actuator_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

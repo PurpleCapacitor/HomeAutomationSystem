@@ -54,9 +54,9 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
-                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, "Edit");
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
+                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, R.string.see_more);
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, R.string.edit);
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, R.string.delete);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -71,7 +71,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
                                 dbManager.deleteActuator(actuator.getId());
                                 actuatorList.remove(position);
                                 notifyItemRemoved(position);
-                                Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, R.string.deleted, Toast.LENGTH_LONG).show();
                                 break;
                         }
                         return false;
@@ -117,7 +117,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
                 notifyItemChanged(position);
                 dialog.dismiss();
             } else {
-                Toast.makeText(context.getApplicationContext(), "Please fill in actuator data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), R.string.fill_actuator_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

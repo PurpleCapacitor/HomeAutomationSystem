@@ -78,7 +78,7 @@ public class MainActivity extends BaseDrawerActivity {
                 new PopulateDevices(this, deviceRecyclerView).execute(currentUserId);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getApplicationContext(), "Please fill in device data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.fill_device_data, Toast.LENGTH_SHORT).show();
             }
         });
     }

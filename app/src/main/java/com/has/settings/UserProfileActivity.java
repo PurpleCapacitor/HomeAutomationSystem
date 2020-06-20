@@ -75,10 +75,10 @@ public class UserProfileActivity extends BaseDrawerActivity {
                             }
                         });
                     } else {
-                        Toast.makeText(getApplicationContext(), "Please fill in email or password fields", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.fill_email_pass, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(UserProfileActivity.this, "Wrong password", Toast.LENGTH_LONG).show();
+                    Toast.makeText(UserProfileActivity.this, R.string.fill_wrong_pass, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -89,7 +89,6 @@ public class UserProfileActivity extends BaseDrawerActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.user_profile_preferences);
-            //setPreferencesFromResource(R.xml.user_profile_preferences, rootKey);
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("currentUser", 0);
             Gson gson = new Gson();
             String userJson = sharedPreferences.getString("user", "");
@@ -100,10 +99,6 @@ public class UserProfileActivity extends BaseDrawerActivity {
             emailTextPreference.setText(user.getEmail());
             firstNameTextPreference.setText(user.getFirstName());
             lastNameTextPreference.setText(user.getLastName());
-            /*PreferenceManager.getDefaultSharedPreferences(UserProfileActivity.this)
-                    .registerOnSharedPreferenceChangeListener(listener);
-*/
-
         }
 
         @Override

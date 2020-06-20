@@ -75,9 +75,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         holder.description.setText(device.getDescription());
         holder.popupMenu.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-            popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, "See more");
-            popupMenu.getMenu().add(Menu.NONE, R.id.share, 2, "Share");
-            popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, "Delete");
+            popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, R.string.see_more);
+            popupMenu.getMenu().add(Menu.NONE, R.id.share, 2, R.string.share);
+            popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, R.string.delete);
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.see_more:
@@ -91,7 +91,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                         databaseManager.deleteDevice(device.getId());
                         deviceList.remove(position);
                         notifyItemRemoved(position);
-                        Toast.makeText(context, "delete", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.deleted, Toast.LENGTH_LONG).show();
                         break;
                 }
                 return false;
@@ -145,7 +145,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                 });
                 dialog.dismiss();
             } else {
-                Toast.makeText(context, "Please fill in user email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.fill_user_email, Toast.LENGTH_SHORT).show();
             }
         });
     }
