@@ -166,7 +166,7 @@ public class RulesActivity extends BaseDrawerActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
-            if (deviceName.length() != 0 && deviceDesc.length() != 0) {
+            if (deviceName.length() != 0 && deviceDesc.length() != 0 && sensor != null && actuator != null) {
                 dbManager = new DatabaseManager(getApplicationContext());
               /*  Rule rule = new Rule();
                 rule.setName(deviceName);

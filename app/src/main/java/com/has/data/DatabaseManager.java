@@ -887,7 +887,9 @@ public class DatabaseManager {
         rule.setId(c.getLong(c.getColumnIndex(DatabaseHelper.CN_ID)));
         rule.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         rule.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
-       // User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
+        rule.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
+
+        // User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
         User user = new User();
         user.setId(userId);
         rule.setUser(user);
@@ -939,7 +941,7 @@ public class DatabaseManager {
     public Actuator getActuatorByRuleId(Long id) {
         Actuator actuator = new Actuator();
         String query = "select * from " + DatabaseHelper.TABLE_RULES_ACTUATORS + " where " +
-                DatabaseHelper.CN_ACTUATOR_ID + " = " + id;
+                DatabaseHelper.CN_RULES_ID + " = " + id;
         Log.d("DATABASE QUERY", query);
 
         db = dbHelper.getReadableDatabase();
@@ -958,7 +960,7 @@ public class DatabaseManager {
     public Sensor getSensorByRuleId(Long id) {
         Sensor sensor = new Sensor();
         String query = "select * from " + DatabaseHelper.TABLE_RULES_SENSORS + " where " +
-                DatabaseHelper.CN_SENSOR_ID + " = " + id;
+                DatabaseHelper.CN_RULES_ID + " = " + id;
         Log.d("DATABASE QUERY", query);
 
         db = dbHelper.getReadableDatabase();
@@ -974,13 +976,38 @@ public class DatabaseManager {
         return sensor;
     }
 
-    public int updateRule(Long id, String name, String description) {
+    public void updateRule(Long id, String name, String description, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.updateRule(id, name, description, versionTimestamp, userId, sensorId, actuatorId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(DatabaseHelper.CN_NAME, name);
+                values.put(DatabaseHelper.CN_DESCRIPTION, description);
+                values.put(DatabaseHelper.CN_USER_ID, userId);
+                values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
+                connectRuleAndActuator(id,actuatorId);
+                connectRuleAndSensor(id,sensorId);
+                db.update(DatabaseHelper.TABLE_RULES, values, DatabaseHelper.CN_ID + " = " + id, null);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+
+  /*  public int updateRule(Long id, String name, String description) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.CN_NAME, name);
         values.put(DatabaseHelper.CN_DESCRIPTION, description);
         return db.update(DatabaseHelper.TABLE_RULES, values, DatabaseHelper.CN_ID + " = " + id, null);
-    }
+    }*/
 
     public int updateRuleAndroid(Rule rule) {
         db = dbHelper.getWritableDatabase();
@@ -993,10 +1020,29 @@ public class DatabaseManager {
     }
 
     public void deleteRule(Long id) {
-        db = dbHelper.getWritableDatabase();
-        String selection = DatabaseHelper.CN_ID + " LIKE ?";
-        String[] args = {String.valueOf(id)};
-        db.delete(DatabaseHelper.TABLE_RULES, selection, args);
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.deleteRule(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                db = dbHelper.getWritableDatabase();
+                String selection = DatabaseHelper.CN_ID + " LIKE ?";
+                String[] args = {String.valueOf(id)};
+                db.delete(DatabaseHelper.TABLE_RULES, selection, args);
+                String deleteQuery = "delete from " + DatabaseHelper.TABLE_RULES_SENSORS + " where " +
+                        DatabaseHelper.CN_RULES_ID + " = " + id;
+                db.execSQL(deleteQuery);
+
+                String deleteQueryu = "delete from " + DatabaseHelper.TABLE_RULES_ACTUATORS + " where " +
+                        DatabaseHelper.CN_RULES_ID + " = " + id;
+                db.execSQL(deleteQueryu);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
     }
 
 
