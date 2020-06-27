@@ -46,6 +46,10 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
     private Sensor sensor = null;
     private Actuator actuatorPos = null;
     private Sensor sensorPos = null;
+    private Spinner spinnerRelations;
+    private Spinner spinnerValuesActuator;
+    private String relation = null;
+    private String onOff = null;
 
 
 
@@ -109,8 +113,8 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
                             case R.id.add_sensor_and_actuator:
                                 break;
                             case R.id.edit:
-                                actuatorPos = databaseManager.getActuatorByRuleId(rule.getId());
-                                sensorPos = databaseManager.getSensorByRuleId(rule.getId());
+//                                actuatorPos = databaseManager.getActuatorByRuleId(rule.getId());
+ //                               sensorPos = databaseManager.getSensorByRuleId(rule.getId());
 
                                 openEditActuatorDialog(rule, position);
                                 break;
@@ -189,6 +193,52 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             }
         });
 
+        List<String> relationsArray = new ArrayList<>();
+        relationsArray.add(">=");
+        relationsArray.add("=");
+        relationsArray.add("<=");
+        relationsArray.add(">");
+        relationsArray.add("<");
+
+        spinnerRelations = (Spinner) view.findViewById(R.id.rule_spinner_relations);
+        ArrayAdapter<String> relations = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,relationsArray);
+        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRelations.setAdapter(relations);
+
+        List<String> onOfArray = new ArrayList<>();
+        onOfArray.add("ON");
+        onOfArray.add("OFF");
+
+        spinnerValuesActuator = (Spinner) view.findViewById(R.id.rule_spinner_value_actuator);
+        ArrayAdapter<String> onOfAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,onOfArray);
+        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerValuesActuator.setAdapter(onOfAdapter);
+
+        spinnerValuesActuator.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onOff = (String) parent.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerRelations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                relation = (String) parent.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
 
         TextView title = view.findViewById(R.id.text_device_title);
@@ -197,6 +247,8 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         deviceNameEditText.setText(rule.getName());
         EditText deviceDescEditText = view.findViewById(R.id.text_rule_description);
         deviceDescEditText.setText(rule.getDescription());
+        EditText deviceValueEditText = view.findViewById(R.id.text_sensor_value);
+
        /* if (sensorPos != null) {
             int spinnerPosition = sensorArrayAdapter.getPosition(sensorPos);
             spinnerSensors.setSelection(spinnerPosition);
@@ -217,8 +269,10 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
             //String value = deviceValueEditText.getText().toString();
+            String valueSensor = deviceValueEditText.getText().toString();
+
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && sensor != null && actuator != null) {
-                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, "15", ">=", "ON", sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
+                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, valueSensor, relation, onOff, sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
 
                 //update actuator
                 Rule updatedActuator = ruleList.get(position);

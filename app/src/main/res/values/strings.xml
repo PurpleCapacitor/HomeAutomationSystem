@@ -97,6 +97,8 @@
     <string name="fill_email_pass">Please fill in email or password fields</string>
     <string name="fill_wrong_pass">Wrong password</string>
     <string name="btn_change_language">Change language</string>
+    <string name="relation">Relation</string>
+
 
 
     <string-array name="devices_array">

@@ -51,9 +51,13 @@ public class RulesActivity extends BaseDrawerActivity {
     private RecyclerView ruleRecyclerView;
     private Spinner spinnerSensors;
     private Spinner spinnerActuators;
+    private Spinner spinnerRelations;
+    private Spinner spinnerValuesActuator;
 
     private Actuator actuator = null;
     private Sensor sensor = null;
+    private String relation = null;
+    private String onOff = null;
 
     private static final String TAG = "MyActivity";
 
@@ -153,10 +157,55 @@ public class RulesActivity extends BaseDrawerActivity {
             }
         });
 
+        List<String> relationsArray = new ArrayList<>();
+        relationsArray.add(">=");
+        relationsArray.add("=");
+        relationsArray.add("<=");
+        relationsArray.add(">");
+        relationsArray.add("<");
 
+        spinnerRelations = (Spinner) view.findViewById(R.id.rule_spinner_relations);
+        ArrayAdapter<String> relations = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,relationsArray);
+        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRelations.setAdapter(relations);
+
+        List<String> onOfArray = new ArrayList<>();
+        onOfArray.add("ON");
+        onOfArray.add("OFF");
+
+        spinnerValuesActuator = (Spinner) view.findViewById(R.id.rule_spinner_value_actuator);
+        ArrayAdapter<String> onOfAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,onOfArray);
+        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerValuesActuator.setAdapter(onOfAdapter);
+
+        spinnerValuesActuator.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onOff = (String) parent.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerRelations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                relation = (String) parent.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         EditText deviceNameEditText = view.findViewById(R.id.text_rule_name);
         EditText deviceDescEditText = view.findViewById(R.id.text_rule_description);
+        EditText deviceValueEditText = view.findViewById(R.id.text_sensor_value);
+
         builder.setView(view)
                 .setNegativeButton(getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {
                 })
@@ -166,6 +215,8 @@ public class RulesActivity extends BaseDrawerActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
+            String valueSensor = deviceValueEditText.getText().toString();
+
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && sensor != null && actuator != null) {
                 dbManager = new DatabaseManager(getApplicationContext());
               /*  Rule rule = new Rule();
@@ -175,7 +226,7 @@ public class RulesActivity extends BaseDrawerActivity {
                 rule.setSensor(sensor);
                 rule.setVersionTimestamp(System.currentTimeMillis());*/
 
-                dbManager.addRule(deviceName,deviceDesc,"15", ">=", "ON", sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
+                dbManager.addRule(deviceName,deviceDesc,valueSensor, relation, onOff, sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
 
                 // update device display
                 new PopulateRules(this, ruleRecyclerView).execute(currentUserId);

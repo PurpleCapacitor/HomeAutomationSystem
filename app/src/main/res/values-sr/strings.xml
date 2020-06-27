@@ -81,4 +81,5 @@
     <string name="fill_email_pass">Email ili lozinka moraju biti popunjeni</string>
     <string name="fill_wrong_pass">Pogrešna lozinka</string>
     <string name="btn_change_language">Promeni jezik</string>
+    <string name="relation">Odnos</string>
 </resources>
