@@ -17,7 +17,7 @@ public class RuleSync extends AsyncTask<String, Void, Long> {
     protected Long doInBackground(String... strings) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         try {
-            Response<Long> response = apiService.createRule(strings[0], strings[1], Long.valueOf(strings[2]),
+            Response<Long> response = apiService.createRule(strings[0], strings[1], Long.valueOf(strings[2]), strings[6],strings[7],strings[8],
                     Long.valueOf(strings[3]), Long.valueOf(strings[4]), Long.valueOf(strings[5])).execute();
             id = response.body();
         } catch (IOException e) {

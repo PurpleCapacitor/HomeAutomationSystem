@@ -5,6 +5,9 @@ public class Rule {
     private Long id;
     private String name;
     private String description;
+    private String value;
+    private String ruleRelation;
+    private String valueActuator;
     private Sensor sensor;
     private Actuator actuator;
     private User user;
@@ -12,6 +15,30 @@ public class Rule {
 
 
     public Rule() {
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getRuleRelation() {
+        return ruleRelation;
+    }
+
+    public void setRuleRelation(String ruleRelation) {
+        this.ruleRelation = ruleRelation;
+    }
+
+    public String getValueActuator() {
+        return valueActuator;
+    }
+
+    public void setValueActuator(String valueActuator) {
+        this.valueActuator = valueActuator;
     }
 
     public Long getVersionTimestamp() {
@@ -70,8 +97,11 @@ public class Rule {
         this.description = description;
     }
 
-    public Rule(String name, String description) {
+    public Rule(String name, String description, String value, String ruleRelation, String valueActuator) {
         this.name = name;
         this.description = description;
+        this.value = value;
+        this.ruleRelation = ruleRelation;
+        this.valueActuator = valueActuator;
     }
 }

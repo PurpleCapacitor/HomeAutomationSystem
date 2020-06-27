@@ -175,7 +175,7 @@ public class RulesActivity extends BaseDrawerActivity {
                 rule.setSensor(sensor);
                 rule.setVersionTimestamp(System.currentTimeMillis());*/
 
-                dbManager.addRule(deviceName,deviceDesc,sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
+                dbManager.addRule(deviceName,deviceDesc,"15", ">=", "ON", sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
 
                 // update device display
                 new PopulateRules(this, ruleRecyclerView).execute(currentUserId);

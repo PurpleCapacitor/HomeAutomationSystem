@@ -218,7 +218,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             String deviceDesc = deviceDescEditText.getText().toString();
             //String value = deviceValueEditText.getText().toString();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && sensor != null && actuator != null) {
-                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
+                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, "15", ">=", "ON", sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
 
                 //update actuator
                 Rule updatedActuator = ruleList.get(position);

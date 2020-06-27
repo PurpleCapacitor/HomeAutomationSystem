@@ -821,8 +821,8 @@ public class DatabaseManager {
 
     // rules
 
-    public void addRule(String name, String description, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
-        String[] params = { name, description, versionTimestamp.toString(), userId.toString(), sensorId.toString(), actuatorId.toString() };
+    public void addRule(String name, String description, String value, String ruleRelation, String valueActuator, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
+        String[] params = { name, description, versionTimestamp.toString(), userId.toString(), sensorId.toString(), actuatorId.toString(), value, ruleRelation, valueActuator};
         AsyncTask<String, Void, Long> id = new RuleSync().execute(params);
         try
         {
@@ -831,6 +831,9 @@ public class DatabaseManager {
             values.put(DatabaseHelper.CN_ID, id.get());
             values.put(DatabaseHelper.CN_NAME, name);
             values.put(DatabaseHelper.CN_DESCRIPTION, description);
+            values.put(DatabaseHelper.CN_VALUE, value);
+            values.put(DatabaseHelper.CN_RULE_RELATION, ruleRelation);
+            values.put(DatabaseHelper.CN_VALUE_ACTUATOR, valueActuator);
             values.put(DatabaseHelper.CN_VERSION_TIMESTAMP,versionTimestamp);
             values.put(DatabaseHelper.CN_USER_ID, userId);
             db.insert(DatabaseHelper.TABLE_RULES, null, values);
@@ -976,9 +979,9 @@ public class DatabaseManager {
         return sensor;
     }
 
-    public void updateRule(Long id, String name, String description, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
+    public void updateRule(Long id, String name, String description, String value, String ruleRelation, String valueActuator, Long sensorId, Long actuatorId, Long userId, Long versionTimestamp) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-        apiService.updateRule(id, name, description, versionTimestamp, userId, sensorId, actuatorId).enqueue(new Callback<Void>() {
+        apiService.updateRule(id, name, description, value, ruleRelation, valueActuator, versionTimestamp, userId, sensorId, actuatorId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 db = dbHelper.getWritableDatabase();
@@ -986,6 +989,10 @@ public class DatabaseManager {
                 values.put(DatabaseHelper.CN_NAME, name);
                 values.put(DatabaseHelper.CN_DESCRIPTION, description);
                 values.put(DatabaseHelper.CN_USER_ID, userId);
+
+                values.put(DatabaseHelper.CN_VALUE, value);
+                values.put(DatabaseHelper.CN_RULE_RELATION, ruleRelation);
+                values.put(DatabaseHelper.CN_VALUE_ACTUATOR, valueActuator);
                 values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
                 connectRuleAndActuator(id,actuatorId);
                 connectRuleAndSensor(id,sensorId);

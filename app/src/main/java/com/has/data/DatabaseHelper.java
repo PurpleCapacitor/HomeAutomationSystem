@@ -38,6 +38,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CN_USER_ID = "user_id";
     public static final String CN_RULES_ID = "rules_id";
     public static final String CN_VERSION_TIMESTAMP = "ver_timestamp";
+    public static final String CN_VALUE_ACTUATOR = "value_actuator";
+    public static final String CN_RULE_RELATION = "rule_relation";
+
 
 
     private static final String CREATE_TABLE_DEVICES = "create table " + TABLE_DEVICES + "(" + CN_ID +
@@ -72,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             CN_USER_ID + " INTEGER, " + CN_DEVICE_ID + " INTEGER, " + CN_SHARED + " INTEGER);";
 
     private static final String CREATE_TABLE_RULES = "create table " + TABLE_RULES + "(" + CN_ID +
-            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT, "
+            " INTEGER PRIMARY KEY AUTOINCREMENT, " + CN_NAME + " TEXT NOT NULL, " + CN_DESCRIPTION + " TEXT, " + CN_VALUE + " TEXT NOT NULL, " + CN_RULE_RELATION + " TEXT NOT NULL, " + CN_VALUE_ACTUATOR + " TEXT NOT NULL, "
             + CN_VERSION_TIMESTAMP + " INTEGER, " + CN_USER_ID + " INTEGER, " +
             "FOREIGN KEY (" + CN_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + CN_ID + ") );";
 
