@@ -24,7 +24,6 @@ public class PopulateActuators extends AsyncTask<Long, Void, Void> {
     private Long deviceId = null;
     private DatabaseManager dbManager;
     @SuppressLint("StaticFieldLeak")
-    //TODO promeni da ne curi
     private RecyclerView recyclerView;
 
     public PopulateActuators(Context context, RecyclerView recyclerView) {

@@ -248,6 +248,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         EditText deviceDescEditText = view.findViewById(R.id.text_rule_description);
         deviceDescEditText.setText(rule.getDescription());
         EditText deviceValueEditText = view.findViewById(R.id.text_sensor_value);
+        deviceValueEditText.setText(rule.getValue());
 
        /* if (sensorPos != null) {
             int spinnerPosition = sensorArrayAdapter.getPosition(sensorPos);

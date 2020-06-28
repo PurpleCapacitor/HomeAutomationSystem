@@ -846,17 +846,20 @@ public class DatabaseManager {
 
     }
 
-    public void addRuleAndroid(Rule device, Long loggedUserId) {
+    public void addRuleAndroid(Rule rule, Long loggedUserId) {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CN_ID, device.getId());
-        values.put(DatabaseHelper.CN_NAME, device.getName());
-        values.put(DatabaseHelper.CN_DESCRIPTION, device.getDescription());
-        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, device.getVersionTimestamp());
+        values.put(DatabaseHelper.CN_ID, rule.getId());
+        values.put(DatabaseHelper.CN_NAME, rule.getName());
+        values.put(DatabaseHelper.CN_DESCRIPTION, rule.getDescription());
+        values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, rule.getVersionTimestamp());
+        values.put(DatabaseHelper.CN_VALUE, rule.getValue());
+        values.put(DatabaseHelper.CN_RULE_RELATION, rule.getRuleRelation());
+        values.put(DatabaseHelper.CN_VALUE_ACTUATOR, rule.getValueActuator());
         values.put(DatabaseHelper.CN_USER_ID, loggedUserId);
         db.insert(DatabaseHelper.TABLE_RULES, null, values); //row id
-        connectRuleAndActuator(device.getId(), device.getActuator().getId());
-        connectRuleAndSensor(device.getId(), device.getSensor().getId());
+        connectRuleAndActuator(rule.getId(), rule.getActuator().getId());
+        connectRuleAndSensor(rule.getId(), rule.getSensor().getId());
 
     }
 
@@ -891,6 +894,9 @@ public class DatabaseManager {
         rule.setName(c.getString(c.getColumnIndex(DatabaseHelper.CN_NAME)));
         rule.setDescription(c.getString(c.getColumnIndex(DatabaseHelper.CN_DESCRIPTION)));
         rule.setVersionTimestamp(c.getLong(c.getColumnIndex(DatabaseHelper.CN_VERSION_TIMESTAMP)));
+        rule.setValue(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE)));
+        rule.setRuleRelation(c.getString(c.getColumnIndex(DatabaseHelper.CN_RULE_RELATION)));
+        rule.setValueActuator(c.getString(c.getColumnIndex(DatabaseHelper.CN_VALUE_ACTUATOR)));
 
         // User user = getUser(c.getLong(c.getColumnIndex(DatabaseHelper.CN_USER_ID)));
         User user = new User();
