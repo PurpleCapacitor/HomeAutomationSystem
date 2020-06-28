@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.has.MainActivity;
 import com.has.R;
+import com.has.async.GenerateDataSensor;
 import com.has.data.DatabaseManager;
 import com.has.data.GetData;
 import com.has.data.RetrofitClient;
@@ -28,6 +29,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     DatabaseManager dbManager;
+    GenerateDataSensor generateDataSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        generateDataSensor = new GenerateDataSensor();
+        generateDataSensor.generate();
 
         Button signIn = findViewById(R.id.button_signIn);
 

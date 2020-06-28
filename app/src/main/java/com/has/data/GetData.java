@@ -97,6 +97,9 @@ public interface GetData {
     @GET("sensors")
     Call<Sensor> getSensors();
 
+    @GET("sensors/generate")
+    Call<Void> generate();
+
     @GET("sensors/{id}")
     Call<Sensor> getSensor(@Path("id") String id);
 
