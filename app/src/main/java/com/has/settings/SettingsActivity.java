@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 
 import com.has.BaseDrawerActivity;
 import com.has.R;
+import com.has.ui.ThemeHelper;
 
 
 public class SettingsActivity extends BaseDrawerActivity {
+
+    protected RadioGroup rGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,5 +34,25 @@ public class SettingsActivity extends BaseDrawerActivity {
             startActivity(i);
         });
 
+        rGroup = findViewById(R.id.radioGroup);
+        int currentTheme = ThemeHelper.getCurrentTheme(this);
+        switch (currentTheme) {
+            case ThemeHelper.LIGHT_THEME:
+                rGroup.check(R.id.radio_light_theme);
+                break;
+            case ThemeHelper.DARK_THEME:
+                rGroup.check(R.id.radio_dark_theme);
+                break;
+        }
+        rGroup.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radio_light_theme:
+                    ThemeHelper.changeTheme(this, ThemeHelper.LIGHT_THEME);
+                    break;
+                case R.id.radio_dark_theme:
+                    ThemeHelper.changeTheme(this, ThemeHelper.DARK_THEME);
+                    break;
+            }
+        });
     }
 }

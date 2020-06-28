@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="@+id/include3">
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/radio_light_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/light_theme_label"
@@ -32,7 +32,7 @@
             tools:layout_editor_absoluteY="186dp" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/radio_dark_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dark_theme_label"

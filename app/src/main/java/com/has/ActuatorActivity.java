@@ -22,6 +22,7 @@ import com.has.adapters.ActionAdapter;
 import com.has.async.PopulateActions;
 import com.has.data.DatabaseManager;
 import com.has.model.Action;
+import com.has.ui.ThemeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ActuatorActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actuator);
 

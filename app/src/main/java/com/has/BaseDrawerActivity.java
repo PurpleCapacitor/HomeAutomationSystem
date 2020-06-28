@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.has.settings.SettingsActivity;
 import com.has.settings.UserProfileActivity;
+import com.has.ui.ThemeHelper;
 import com.has.user.LoginActivity;
 
 public class BaseDrawerActivity extends AppCompatActivity
@@ -24,6 +25,7 @@ public class BaseDrawerActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_drawer);
 

@@ -18,6 +18,7 @@ import com.has.data.DatabaseManager;
 import com.has.data.GetData;
 import com.has.data.RetrofitClient;
 import com.has.model.User;
+import com.has.ui.ThemeHelper;
 
 
 import retrofit2.Call;
@@ -30,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

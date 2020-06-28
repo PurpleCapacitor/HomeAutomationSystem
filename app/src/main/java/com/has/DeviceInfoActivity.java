@@ -3,7 +3,6 @@ package com.has;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +22,12 @@ import com.google.gson.Gson;
 import com.has.adapters.ActuatorAdapter;
 import com.has.adapters.SensorAdapter;
 import com.has.async.PopulateActuators;
-import com.has.async.PopulateDevices;
 import com.has.async.PopulateSensors;
 import com.has.data.DatabaseManager;
 import com.has.model.Actuator;
 import com.has.model.Device;
 import com.has.model.Sensor;
-import com.has.model.User;
+import com.has.ui.ThemeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +47,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_info);
 
