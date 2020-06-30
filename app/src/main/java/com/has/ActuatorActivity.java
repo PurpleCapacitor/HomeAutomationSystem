@@ -2,6 +2,8 @@ package com.has;
 
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActionAdapter;
 import com.has.async.PopulateActions;
 import com.has.data.DatabaseManager;
+import com.has.listeners.ShakeDetector;
 import com.has.model.Action;
 import com.has.ui.ThemeHelper;
 
@@ -33,12 +36,35 @@ public class ActuatorActivity extends AppCompatActivity {
     private DatabaseManager dbManager;
     private Long actuatorId;
     private RecyclerView actionRecyclerView;
+    // The following are used for the shake detection
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actuator);
+
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+
+            @Override
+            public void onShake(int count) {
+                /*
+                 * The following method, "handleShakeEvent(count):" is a stub //
+                 * method you would use to setup whatever you want done once the
+                 * device has been shook.
+                 */
+                handleShakeEvent(count);
+            }
+        });
+
 
         dbManager = new DatabaseManager(getApplicationContext());
 
@@ -69,6 +95,25 @@ public class ActuatorActivity extends AppCompatActivity {
         TextView description = findViewById(R.id.text_component_description_info);
         description.setText(actuatorDesc);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Add the following line to register the Session Manager Listener onResume
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    public void onPause() {
+        // Add the following line to unregister the Sensor Manager onPause
+        mSensorManager.unregisterListener(mShakeDetector);
+        super.onPause();
+    }
+
+    public void handleShakeEvent(int count)
+    {
+        Toast.makeText(getApplicationContext(), "SHAKEEEEEE", Toast.LENGTH_LONG).show();
     }
 
     private void openEditActionDialog() {
