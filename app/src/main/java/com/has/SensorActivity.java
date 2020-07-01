@@ -27,11 +27,12 @@ public class SensorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String sensorName = intent.getStringExtra("sensorName");
         String sensorDesc = intent.getStringExtra("sensorDesc");
+        String sensorValue = intent.getStringExtra("sensorValue");
 
         TextView header = findViewById(R.id.text_sensor_name_info);
         header.setText(sensorName);
         TextView description = findViewById(R.id.text_sensor_description_info);
-        description.setText(sensorDesc);
+        description.setText(sensorValue);
     }
 
     @Override

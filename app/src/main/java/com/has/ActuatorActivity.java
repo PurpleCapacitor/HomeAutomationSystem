@@ -48,24 +48,6 @@ public class ActuatorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_actuator);
 
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-
-            @Override
-            public void onShake(int count) {
-                /*
-                 * The following method, "handleShakeEvent(count):" is a stub //
-                 * method you would use to setup whatever you want done once the
-                 * device has been shook.
-                 */
-                handleShakeEvent(count);
-            }
-        });
-
-
         dbManager = new DatabaseManager(getApplicationContext());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -85,6 +67,24 @@ public class ActuatorActivity extends AppCompatActivity {
         new PopulateActions(this, actionRecyclerView).execute(actuatorId);
         RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
         actionRecyclerView.setAdapter(actionAdapter);
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+
+            @Override
+            public void onShake(int count) {
+                /*
+                 * The following method, "handleShakeEvent(count):" is a stub //
+                 * method you would use to setup whatever you want done once the
+                 * device has been shook.
+                 */
+                if(actionList.size()!=0)
+                    handleShakeEvent(count);
+            }
+        });
 
 
         FloatingActionButton addButton = findViewById(R.id.floating_button_add);
@@ -113,6 +113,7 @@ public class ActuatorActivity extends AppCompatActivity {
 
     public void handleShakeEvent(int count)
     {
+        //TODO odradi retrofit
         Toast.makeText(getApplicationContext(), "SHAKEEEEEE", Toast.LENGTH_LONG).show();
     }
 

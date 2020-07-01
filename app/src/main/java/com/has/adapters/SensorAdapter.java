@@ -138,6 +138,8 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         Intent intent = new Intent(context, SensorActivity.class);
         intent.putExtra("sensorName", sensor.getReference());
         intent.putExtra("sensorDesc", sensor.getDescription());
+        intent.putExtra("sensorValue", sensor.getValue());
+
         context.startActivity(intent);
     }
 
