@@ -200,7 +200,6 @@ public interface GetData {
     Call<Void> updateAction(@Path("id") Long id,
                             @Field("name") String name,
                             @Field("description") String description,
-                            @Field("action") String action,
                             @Field("actuatorId") Long actuatorId,
                             @Field("versionTimestamp") Long versionTimestamp);
 

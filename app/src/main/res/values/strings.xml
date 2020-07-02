@@ -98,7 +98,10 @@
     <string name="fill_wrong_pass">Wrong password</string>
     <string name="btn_change_language">Change language</string>
     <string name="relation">Relation</string>
-
+    <string name="text">Text</string>
+    <string name="button_ok">OK</string>
+    <string name="sensor_id">Sensor ID</string>
+    <string name="actuator_id">Actuator ID</string>
 
 
     <string-array name="devices_array">

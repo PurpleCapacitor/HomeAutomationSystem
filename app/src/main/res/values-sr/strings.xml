@@ -82,4 +82,8 @@
     <string name="fill_wrong_pass">Pogrešna lozinka</string>
     <string name="btn_change_language">Promeni jezik</string>
     <string name="relation">Odnos</string>
+    <string name="text">Tekst</string>
+    <string name="button_ok">OK</string>
+    <string name="sensor_id">ID senzora</string>
+    <string name="actuator_id">ID aktuatora</string>
 </resources>

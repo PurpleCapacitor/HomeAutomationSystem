@@ -1,6 +1,8 @@
 package com.has.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,7 +54,6 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
     private String onOff = null;
 
 
-
     public RuleAdapter(List<Rule> ruleList, Context context) {
         this.ruleList = ruleList;
         this.context = context;
@@ -70,26 +71,22 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         databaseManager = new DatabaseManager(context);
         deviceList = databaseManager.getDevicesByUserId(currentUserId);
 
-        for(Device d: deviceList)
-        {
+        for (Device d : deviceList) {
             List<Sensor> sensors = databaseManager.getSensorsByDeviceId(d.getId());
 
-            for(Sensor s: sensors)
-            {
+            for (Sensor s : sensors) {
                 sensorList.add(s);
             }
 
             List<Actuator> actuators = databaseManager.getActuatorsByDeviceId(d.getId());
 
-            for(Actuator s: actuators)
-            {
+            for (Actuator s : actuators) {
                 actuatorList.add(s);
             }
 
         }
 
         return new RuleAdapter.RuleViewHolder(v);
-
 
 
     }
@@ -103,19 +100,20 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
-                popupMenu.getMenu().add(Menu.NONE, R.id.add_sensor_and_actuator, 1, R.string.add_sensor_and_actuator);
-                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, R.string.edit);
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, R.string.delete);
+                popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, R.string.see_more);
+                popupMenu.getMenu().add(Menu.NONE, R.id.add_sensor_and_actuator, 2, R.string.add_sensor_and_actuator);
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 3, R.string.edit);
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 4, R.string.delete);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
+                            case R.id.see_more:
+                                ruleInfoDialog(rule);
+                                break;
                             case R.id.add_sensor_and_actuator:
                                 break;
                             case R.id.edit:
-//                                actuatorPos = databaseManager.getActuatorByRuleId(rule.getId());
- //                               sensorPos = databaseManager.getSensorByRuleId(rule.getId());
-
                                 openEditActuatorDialog(rule, position);
                                 break;
                             case R.id.delete:
@@ -161,7 +159,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         View view = inflater.inflate(R.layout.dialog_add_rule, null);
 
         spinnerSensors = (Spinner) view.findViewById(R.id.rule_spinner_sensors);
-        ArrayAdapter<Sensor> sensorArrayAdapter = new ArrayAdapter<Sensor>(context,android.R.layout.simple_spinner_item,sensorList);
+        ArrayAdapter<Sensor> sensorArrayAdapter = new ArrayAdapter<Sensor>(context, android.R.layout.simple_spinner_item, sensorList);
         sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSensors.setAdapter(sensorArrayAdapter);
 
@@ -178,7 +176,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         });
 
         spinnerActuators = (Spinner) view.findViewById(R.id.rule_spinner_actuators);
-        ArrayAdapter<Actuator> actuatorArrayAdapter = new ArrayAdapter<Actuator>(context,android.R.layout.simple_spinner_item,actuatorList);
+        ArrayAdapter<Actuator> actuatorArrayAdapter = new ArrayAdapter<Actuator>(context, android.R.layout.simple_spinner_item, actuatorList);
         actuatorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerActuators.setAdapter(actuatorArrayAdapter);
         spinnerActuators.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -201,7 +199,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         relationsArray.add("<");
 
         spinnerRelations = (Spinner) view.findViewById(R.id.rule_spinner_relations);
-        ArrayAdapter<String> relations = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,relationsArray);
+        ArrayAdapter<String> relations = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, relationsArray);
         relations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRelations.setAdapter(relations);
 
@@ -214,7 +212,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         onOfArray.add("OFF");
 
         spinnerValuesActuator = (Spinner) view.findViewById(R.id.rule_spinner_value_actuator);
-        ArrayAdapter<String> onOfAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,onOfArray);
+        ArrayAdapter<String> onOfAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, onOfArray);
         onOfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerValuesActuator.setAdapter(onOfAdapter);
 
@@ -246,8 +244,6 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
         });
 
 
-
-
         TextView title = view.findViewById(R.id.text_device_title);
         title.setText(R.string.edit_rule);
         EditText deviceNameEditText = view.findViewById(R.id.text_rule_name);
@@ -269,7 +265,8 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
      /*   EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
         deviceValueEditText.setText(actuator.getValue());*/
         builder.setView(view)
-                .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
+                .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {
+                })
                 .setPositiveButton(context.getResources().getString(R.string.button_edit), null);
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -280,7 +277,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             String valueSensor = deviceValueEditText.getText().toString();
 
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && sensor != null && actuator != null) {
-                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, valueSensor, relation, onOff, sensor.getId(),actuator.getId(),currentUserId,System.currentTimeMillis());
+                databaseManager.updateRule(rule.getId(), deviceName, deviceDesc, valueSensor, relation, onOff, sensor.getId(), actuator.getId(), currentUserId, System.currentTimeMillis());
 
                 //update actuator
                 Rule updatedActuator = ruleList.get(position);
@@ -293,5 +290,29 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
                 Toast.makeText(context.getApplicationContext(), R.string.fill_actuator_data, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void ruleInfoDialog(Rule rule) {
+        Sensor sensor = databaseManager.getSensorByRuleId(rule.getId());
+        Actuator actuator = databaseManager.getActuatorByRuleId(rule.getId());
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_view_rule, null);
+        TextView ruleName = view.findViewById(R.id.text_rule_title);
+        ruleName.setText(rule.getName());
+        TextView ruleRelation = view.findViewById(R.id.text_dialog_rule_relation);
+        ruleRelation.setText(context.getString(R.string.relation) + ": " + rule.getRuleRelation());
+        TextView ruleSensorId = view.findViewById(R.id.text_dialog_rule_sensor_id);
+        ruleSensorId.setText(context.getString(R.string.sensor_id) + ": " + sensor.getId().toString());
+        TextView ruleActuatorId = view.findViewById(R.id.text_dialog_rule_actuator_id);
+        ruleActuatorId.setText(context.getString(R.string.actuator_id) + ": " + actuator.getId().toString());
+        TextView value = view.findViewById(R.id.text_dialog_rule_value);
+        value.setText(context.getString(R.string.device_value) + ": " + rule.getValue());
+
+        builder.setView(view)
+                .setPositiveButton(R.string.button_ok, (dialogInterface, i) -> {});
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

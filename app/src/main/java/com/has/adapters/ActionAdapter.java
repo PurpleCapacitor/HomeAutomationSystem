@@ -101,8 +101,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         deviceNameEditText.setText(action.getName());
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
         deviceDescEditText.setText(action.getDescription());
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
-        deviceValueEditText.setText(action.getAction());
+        //EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
+        //deviceValueEditText.setText(action.getAction());
         builder.setView(view)
                 .setNegativeButton(R.string.button_cancel, (dialogInterface, i) -> {})
                 .setPositiveButton(R.string.button_edit, null);
@@ -111,16 +111,16 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
-            String devAction = deviceValueEditText.getText().toString();
-            if (deviceName.length() != 0 && deviceDesc.length() != 0 && devAction.length() != 0) {
-                dbManager.updateAction(action.getId(), deviceName, deviceDesc, devAction,
+            //String devAction = deviceValueEditText.getText().toString();
+            if (deviceName.length() != 0 && deviceDesc.length() != 0) {
+                dbManager.updateAction(action.getId(), deviceName, deviceDesc,
                         action.getActuator().getId(), System.currentTimeMillis());
 
                 //update action
                 Action updatedAction = actionList.get(position);
                 updatedAction.setName(deviceName);
                 updatedAction.setDescription(deviceDesc);
-                updatedAction.setAction(devAction);
+                //updatedAction.setAction(devAction);
                 notifyItemChanged(position);
                 dialog.dismiss();
             } else {

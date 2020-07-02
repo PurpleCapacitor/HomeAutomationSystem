@@ -631,10 +631,10 @@ public class DatabaseManager {
         return actions;
     }
 
-    public void updateAction(Long id, String name, String description, String action, Long actuatorId,
+    public void updateAction(Long id, String name, String description, Long actuatorId,
                             Long versionTimestamp) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-        apiService.updateAction(id, name, description, action, actuatorId, versionTimestamp).enqueue(
+        apiService.updateAction(id, name, description, actuatorId, versionTimestamp).enqueue(
                 new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -642,7 +642,7 @@ public class DatabaseManager {
                         ContentValues values = new ContentValues();
                         values.put(DatabaseHelper.CN_NAME, name);
                         values.put(DatabaseHelper.CN_DESCRIPTION, description);
-                        values.put(DatabaseHelper.CN_ACTION, action);
+                        //values.put(DatabaseHelper.CN_ACTION, action);
                         values.put(DatabaseHelper.CN_ACTUATOR_ID, actuatorId);
                         values.put(DatabaseHelper.CN_VERSION_TIMESTAMP, versionTimestamp);
                         db.update(DatabaseHelper.TABLE_ACTIONS, values, DatabaseHelper.CN_ID + " = " + id, null);

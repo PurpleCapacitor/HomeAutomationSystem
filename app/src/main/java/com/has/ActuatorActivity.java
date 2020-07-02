@@ -74,7 +74,7 @@ public class ActuatorActivity extends AppCompatActivity {
         new PopulateActions(this, actionRecyclerView).execute(actuatorId);
         RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
         actionRecyclerView.setAdapter(actionAdapter);
-        numActions = actionAdapter.getItemCount();
+        actionList = dbManager.getActionsByActuator(actuatorId);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
@@ -89,7 +89,7 @@ public class ActuatorActivity extends AppCompatActivity {
                  * method you would use to setup whatever you want done once the
                  * device has been shook.
                  */
-                if(numActions!=0)
+                if(!actionList.isEmpty())
                     handleShakeEvent(count);
             }
         });
@@ -128,9 +128,7 @@ public class ActuatorActivity extends AppCompatActivity {
         apiService.shake(actuatorId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code() == 200) {
 
-                }
             }
 
             @Override
