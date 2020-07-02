@@ -127,6 +127,8 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
         intent.putExtra("actuatorId", actuator.getId());
         intent.putExtra("actuatorName", actuator.getReference());
         intent.putExtra("actuatorDesc", actuator.getDescription());
+        intent.putExtra("actuatorValue", actuator.getValue());
+
         context.startActivity(intent);
     }
 

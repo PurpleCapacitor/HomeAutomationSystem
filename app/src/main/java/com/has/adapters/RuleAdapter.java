@@ -202,8 +202,12 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
 
         spinnerRelations = (Spinner) view.findViewById(R.id.rule_spinner_relations);
         ArrayAdapter<String> relations = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,relationsArray);
-        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        relations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRelations.setAdapter(relations);
+
+        int spinnerPosition1 = relations.getPosition(rule.getRuleRelation());
+        spinnerRelations.setSelection(spinnerPosition1);
+
 
         List<String> onOfArray = new ArrayList<>();
         onOfArray.add("ON");
@@ -211,8 +215,11 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
 
         spinnerValuesActuator = (Spinner) view.findViewById(R.id.rule_spinner_value_actuator);
         ArrayAdapter<String> onOfAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,onOfArray);
-        sensorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        onOfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerValuesActuator.setAdapter(onOfAdapter);
+
+        int spinnerPosition = onOfAdapter.getPosition(rule.getValueActuator());
+        spinnerValuesActuator.setSelection(spinnerPosition);
 
         spinnerValuesActuator.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

@@ -23,12 +23,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.has.adapters.ActionAdapter;
 import com.has.async.PopulateActions;
 import com.has.data.DatabaseManager;
+import com.has.data.GetData;
+import com.has.data.RetrofitClient;
 import com.has.listeners.ShakeDetector;
 import com.has.model.Action;
 import com.has.ui.ThemeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ActuatorActivity extends AppCompatActivity {
 
@@ -40,6 +46,7 @@ public class ActuatorActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
+    private long numActions = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,11 +69,12 @@ public class ActuatorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         actuatorId = intent.getLongExtra("actuatorId", -1L);
         String actuatorName = intent.getStringExtra("actuatorName");
-        String actuatorDesc = intent.getStringExtra("actuatorDesc");
+        String actuatorDesc = intent.getStringExtra("actuatorValue");
 
         new PopulateActions(this, actionRecyclerView).execute(actuatorId);
         RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
         actionRecyclerView.setAdapter(actionAdapter);
+        numActions = actionAdapter.getItemCount();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
@@ -81,7 +89,7 @@ public class ActuatorActivity extends AppCompatActivity {
                  * method you would use to setup whatever you want done once the
                  * device has been shook.
                  */
-                if(actionList.size()!=0)
+                if(numActions!=0)
                     handleShakeEvent(count);
             }
         });
@@ -115,6 +123,20 @@ public class ActuatorActivity extends AppCompatActivity {
     {
         //TODO odradi retrofit
         Toast.makeText(getApplicationContext(), "SHAKEEEEEE", Toast.LENGTH_LONG).show();
+
+        GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
+        apiService.shake(actuatorId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code() == 200) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
     }
 
     private void openEditActionDialog() {
@@ -125,7 +147,6 @@ public class ActuatorActivity extends AppCompatActivity {
         title.setText(R.string.add_action);
         EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
         builder.setView(view)
                 .setNegativeButton(R.string.button_cancel, (dialogInterface, i) -> {})
                 .setPositiveButton(R.string.button_add, null);
@@ -134,9 +155,8 @@ public class ActuatorActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String actionName = deviceNameEditText.getText().toString();
             String actionDesc = deviceDescEditText.getText().toString();
-            String actionAction = deviceValueEditText.getText().toString();
-            if (actionName.length() != 0 && actionDesc.length() != 0 && actionAction.length() != 0) {
-                dbManager.addAction(actionName, actionDesc, actionAction, actuatorId, System.currentTimeMillis());
+            if (actionName.length() != 0 && actionDesc.length() != 0) {
+                dbManager.addAction(actionName, actionDesc, "YES", actuatorId, System.currentTimeMillis());
 
                 //update actions
                 new PopulateActions(this, actionRecyclerView).execute(actuatorId);
