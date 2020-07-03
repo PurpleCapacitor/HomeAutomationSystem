@@ -68,7 +68,7 @@ public interface GetData {
     Call<Device> getActuators();
 
     @GET("actuators/shake/{id}")
-    Call<Void> shake(@Path("id") Long id);
+    Call<Actuator> shake(@Path("id") Long id);
 
     @GET("actuators/{id}")
     Call<Actuator> getActuator(@Path("id") String id);

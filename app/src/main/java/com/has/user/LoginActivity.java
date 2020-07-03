@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Button signIn = findViewById(R.id.button_signIn);
 
-        getApplicationContext().deleteDatabase("HomeAutomation.db"); //TODO za testiranje
+        getApplicationContext().deleteDatabase("HomeAutomation.db");
         dbManager = new DatabaseManager(getApplicationContext());
 
         User user = new User(1L, "da@da", "da", "da", "da", null,
@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-                //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
                 apiService.login(email.getText().toString(),pass.getText().toString()).enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {

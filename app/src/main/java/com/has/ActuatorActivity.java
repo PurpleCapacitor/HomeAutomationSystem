@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.has.data.GetData;
 import com.has.data.RetrofitClient;
 import com.has.listeners.ShakeDetector;
 import com.has.model.Action;
+import com.has.model.Actuator;
 import com.has.ui.ThemeHelper;
 
 import java.util.ArrayList;
@@ -42,11 +44,12 @@ public class ActuatorActivity extends AppCompatActivity {
     private DatabaseManager dbManager;
     private Long actuatorId;
     private RecyclerView actionRecyclerView;
+    private TextView value;
     // The following are used for the shake detection
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
-    private long numActions = 0;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class ActuatorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         actuatorId = intent.getLongExtra("actuatorId", -1L);
         String actuatorName = intent.getStringExtra("actuatorName");
-        String actuatorDesc = intent.getStringExtra("actuatorValue");
+        String actuatorValue = intent.getStringExtra("actuatorValue");
 
         new PopulateActions(this, actionRecyclerView).execute(actuatorId);
         RecyclerView.Adapter actionAdapter = new ActionAdapter(actionList, this);
@@ -100,8 +103,8 @@ public class ActuatorActivity extends AppCompatActivity {
 
         TextView header = findViewById(R.id.text_component_name_info);
         header.setText(actuatorName);
-        TextView description = findViewById(R.id.text_component_description_info);
-        description.setText(actuatorDesc);
+        value = findViewById(R.id.text_component_description_info);
+        value.setText(actuatorValue);
 
     }
 
@@ -121,18 +124,19 @@ public class ActuatorActivity extends AppCompatActivity {
 
     public void handleShakeEvent(int count)
     {
-        //TODO odradi retrofit
-        Toast.makeText(getApplicationContext(), "SHAKEEEEEE", Toast.LENGTH_LONG).show();
 
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-        apiService.shake(actuatorId).enqueue(new Callback<Void>() {
+        apiService.shake(actuatorId).enqueue(new Callback<Actuator>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-
+            public void onResponse(Call<Actuator> call, Response<Actuator> response) {
+                Toast.makeText(getApplicationContext(), ActuatorActivity.this.getString(R.string.actuator_value_changed)
+                        + " " + response.body().getValue(), Toast.LENGTH_LONG).show();
+                dbManager.updateActuatorAndroid(response.body());
+                value.setText(response.body().getValue());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Actuator> call, Throwable t) {
             }
         });
     }

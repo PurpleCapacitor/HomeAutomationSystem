@@ -102,6 +102,7 @@
     <string name="button_ok">OK</string>
     <string name="sensor_id">Sensor ID</string>
     <string name="actuator_id">Actuator ID</string>
+    <string name="actuator_value_changed">Actuator value changed to:</string>
 
 
     <string-array name="devices_array">

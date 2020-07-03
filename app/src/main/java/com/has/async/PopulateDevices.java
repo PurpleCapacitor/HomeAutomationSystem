@@ -37,7 +37,7 @@ public class PopulateDevices extends AsyncTask<Long, Void, Void> {
     protected Void doInBackground(Long... longs) {
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         try {
-            //contextRef.get().deleteDatabase("HomeAutomation.db"); //TODO za testiranje
+            //contextRef.get().deleteDatabase("HomeAutomation.db");
             Response<List<Device>> response = apiService.getDevicesByUserId(longs[0]).execute();
             dbManager = new DatabaseManager(contextRef.get());
             userId = longs[0];

@@ -24,7 +24,6 @@ public class SettingsActivity extends BaseDrawerActivity {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams")
         View contentView = inflater.inflate(R.layout.activity_settings, null, false);
-        //TODO kad se okrene landscape ?!
         drawer.addView(contentView, 0);
         navigationView.setCheckedItem(R.id.nav_activity4);
 

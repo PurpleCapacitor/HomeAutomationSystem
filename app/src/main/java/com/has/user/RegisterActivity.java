@@ -39,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
-                //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
                 apiService.register(email.getText().toString(),pass.getText().toString(),firstName.getText().toString(),lastName.getText().toString()).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {

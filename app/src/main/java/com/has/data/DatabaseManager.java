@@ -45,7 +45,6 @@ public class DatabaseManager {
     // devices
 
     public void addDevice(String name, String description, Long loggedUserId, Long versionTimestamp) {
-        //TODO try catch da bude ubudce da vidis dal ima konekcije ako nema da vratis gresku da ne pukne app
         String[] params = { name, description, loggedUserId.toString(), versionTimestamp.toString() };
         AsyncTask<String, Void, Long> id = new DeviceSync().execute(params);
         try {
@@ -185,8 +184,6 @@ public class DatabaseManager {
     }
 
     public void deleteDevice(Long id) {
-        //TODO kad se brise, brisi sve vezane aktuatore i senzore pa onda u tim aktuatorima brises njihove akcije i brises pravila
-        //vezana za te aktuatore i za senzore
         GetData apiService = RetrofitClient.getRetrofitInstance().create(GetData.class);
         apiService.deleteDevice(id).enqueue(new Callback<Void>() {
             @Override
@@ -358,7 +355,6 @@ public class DatabaseManager {
                 String selection = DatabaseHelper.CN_ID + " LIKE ?";
                 String[] args = {String.valueOf(id)};
                 db.delete(DatabaseHelper.TABLE_ACTUATORS, selection, args);
-                //TODO i za sva pravila i akcije da brises
             }
 
             @Override
