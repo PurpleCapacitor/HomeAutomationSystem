@@ -3,7 +3,10 @@
 /local.properties
 /.idea
 .DS_Store
-/build
+/build/generated
+/build/intermediates
+/build/outputs/logs
+/build/tmp
 /captures
 .externalNativeBuild
 .cxx
