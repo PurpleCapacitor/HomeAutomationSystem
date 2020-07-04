@@ -19,7 +19,7 @@
         android:hint="@string/device_name"
         app:layout_constraintBottom_toTopOf="@+id/text_rule_description"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_device_title"
         app:layout_constraintVertical_bias="1.0" />
@@ -39,7 +39,7 @@
         android:minLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_rule_name" />
 
@@ -59,8 +59,8 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/rule_spinner_relations"
-        android:layout_width="239dp"
-        android:layout_height="26dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="128dp"
         android:layout_marginEnd="8dp"
@@ -73,7 +73,7 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/rule_spinner_value_actuator"
-        android:layout_width="239dp"
+        android:layout_width="wrap_content"
         android:layout_height="26dp"
         android:layout_marginTop="288dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,8 +85,8 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/rule_spinner_sensors"
-        android:layout_width="239dp"
-        android:layout_height="26dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="92dp"
         android:layout_marginEnd="8dp"
@@ -99,7 +99,7 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/rule_spinner_actuators"
-        android:layout_width="239dp"
+        android:layout_width="wrap_content"
         android:layout_height="26dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="92dp"
@@ -113,8 +113,8 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="67dp"
-        android:layout_height="18dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="132dp"
         android:text="@string/actuators"
@@ -130,7 +130,7 @@
         android:layout_marginEnd="8dp"
         android:text="@string/sensors"
         app:layout_constraintEnd_toStartOf="@+id/rule_spinner_sensors"
-        app:layout_constraintHorizontal_bias="0.257"
+        app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_rule_description" />
 
@@ -140,10 +140,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         android:text="@string/relation"
-        app:layout_constraintEnd_toStartOf="@+id/rule_spinner_sensors"
-        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintEnd_toStartOf="@+id/rule_spinner_relations"
+        app:layout_constraintHorizontal_bias="0.208"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
@@ -161,8 +160,8 @@
         android:id="@+id/text_sensor_value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="@string/device_value"
         android:inputType="number"
