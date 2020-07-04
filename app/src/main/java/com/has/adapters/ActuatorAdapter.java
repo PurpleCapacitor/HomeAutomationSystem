@@ -94,8 +94,6 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
         deviceNameEditText.setText(actuator.getReference());
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
         deviceDescEditText.setText(actuator.getDescription());
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
-        deviceValueEditText.setText(actuator.getValue());
         builder.setView(view)
                 .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
                 .setPositiveButton(context.getResources().getString(R.string.button_edit), null);
@@ -104,7 +102,7 @@ public class ActuatorAdapter extends RecyclerView.Adapter<ActuatorAdapter.Actuat
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
-            String value = deviceValueEditText.getText().toString();
+            String value = actuator.getValue();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && value.length() != 0) {
                 dbManager.updateActuator(actuator.getId(), deviceName, deviceDesc, actuator.getDevice().getId(), value,
                         System.currentTimeMillis());

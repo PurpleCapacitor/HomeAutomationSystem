@@ -101,17 +101,14 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.popupMenu);
                 popupMenu.getMenu().add(Menu.NONE, R.id.see_more, 1, R.string.see_more);
-                popupMenu.getMenu().add(Menu.NONE, R.id.add_sensor_and_actuator, 2, R.string.add_sensor_and_actuator);
-                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 3, R.string.edit);
-                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 4, R.string.delete);
+                popupMenu.getMenu().add(Menu.NONE, R.id.edit, 2, R.string.edit);
+                popupMenu.getMenu().add(Menu.NONE, R.id.delete, 3, R.string.delete);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.see_more:
                                 ruleInfoDialog(rule);
-                                break;
-                            case R.id.add_sensor_and_actuator:
                                 break;
                             case R.id.edit:
                                 openEditActuatorDialog(rule, position);
@@ -184,6 +181,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.RuleViewHolder
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 actuator = (Actuator) parent.getSelectedItem();
             }
+
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {

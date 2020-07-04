@@ -107,8 +107,6 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         deviceNameEditText.setText(sensor.getReference());
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
         deviceDescEditText.setText(sensor.getDescription());
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
-        deviceValueEditText.setText(sensor.getValue());
         builder.setView(view)
                 .setNegativeButton(context.getResources().getString(R.string.button_cancel), (dialogInterface, i) -> {})
                 .setPositiveButton(context.getResources().getString(R.string.button_edit), null);
@@ -117,7 +115,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String deviceName = deviceNameEditText.getText().toString();
             String deviceDesc = deviceDescEditText.getText().toString();
-            String value = deviceValueEditText.getText().toString();
+            String value = sensor.getValue();
             if (deviceName.length() != 0 && deviceDesc.length() != 0 && value.length() != 0) {
                 dbManager.updateSensor(sensor.getId(), deviceName, deviceDesc, sensor.getDevice().getId(), value, System.currentTimeMillis());
 

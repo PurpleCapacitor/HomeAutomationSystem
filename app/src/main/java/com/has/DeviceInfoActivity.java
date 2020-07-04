@@ -178,7 +178,6 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
         EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
         TextView title = view.findViewById(R.id.text_device_title);
         title.setText(R.string.add_sensor);
         builder.setView(view)
@@ -189,7 +188,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String name = deviceNameEditText.getText().toString();
             String description = deviceDescEditText.getText().toString();
-            String value = deviceValueEditText.getText().toString();
+            String value = "15";
             if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
                 dbManager.addSensor(name, description, deviceId, value, System.currentTimeMillis());
 
@@ -209,7 +208,6 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
         EditText deviceNameEditText = view.findViewById(R.id.text_device_name);
         EditText deviceDescEditText = view.findViewById(R.id.text_device_description);
-        EditText deviceValueEditText = view.findViewById(R.id.text_device_value);
         TextView title = view.findViewById(R.id.text_device_title);
         title.setText(R.string.add_actuator);
         builder.setView(view)
@@ -220,7 +218,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String name = deviceNameEditText.getText().toString();
             String description = deviceDescEditText.getText().toString();
-            String value = deviceValueEditText.getText().toString();
+            String value = "OFF";
             if (name.length() != 0 && description.length() != 0 && value.length() != 0) {
                 dbManager.addActuator(name, description, deviceId, value, System.currentTimeMillis());
 
